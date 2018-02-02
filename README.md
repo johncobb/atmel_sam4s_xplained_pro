@@ -1,0 +1,1 @@
+/Users/jcobb/dev/edbg/edbg -bpv -t atmel_cm4 -f ~/dev/projects/sam4sd32c_xplained_pro/getting-started-flash.bin

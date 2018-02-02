@@ -84,4 +84,6 @@
 #include <wdt.h>
 #include <pio_handler.h>
 
+#include <twi.h>
+
 #endif // ASF_H

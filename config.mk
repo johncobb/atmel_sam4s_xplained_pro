@@ -56,8 +56,12 @@ TARGET_SRAM = getting-started-sram.elf
 CSRCS = \
        common/services/clock/sam4s/sysclk.c               \
        common/services/delay/sam/cycle_counter.c          \
+       common/services/serial/usart_serial.c              \
        common/utils/interrupt/interrupt_sam_nvic.c        \
+       common/utils/stdio/read.c                          \
+       common/utils/stdio/write.c                          \
        ../main.c                                          \
+       ../imu/mpu6050.c                               \
        sam/boards/sam4s_xplained_pro/init.c               \
        sam/drivers/twi/twi.c                                  \
        sam/drivers/pio/pio.c                              \
@@ -65,6 +69,8 @@ CSRCS = \
        sam/drivers/pmc/pmc.c                              \
        sam/drivers/pmc/sleep.c                            \
        sam/drivers/wdt/wdt.c                              \
+       sam/drivers/uart/uart.c                              \
+       sam/drivers/usart/usart.c                              \
        sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.c \
        sam/utils/cmsis/sam4s/source/templates/system_sam4s.c \
        sam/utils/syscalls/gcc/syscalls.c
@@ -75,6 +81,7 @@ ASSRCS =
 # List of include paths.
 INC_PATH = \
        ../config                                          \
+       ../imu                                             \
        ../                                                \
        common/boards                                      \
        common/services/clock                              \
@@ -82,14 +89,19 @@ INC_PATH = \
        common/services/ioport/sam                         \
        common/services/ioport                             \
        common/services/delay                              \
+       common/services/serial/sam_uart                    \
+       common/services/serial                             \
        common/utils                                       \
        common/utils/interrupt                             \
+       common/utils/stdio/stdio_serial                    \
        sam/boards                                         \
        sam/boards/sam4s_xplained_pro                      \
        sam/drivers/twi                                    \
        sam/drivers/pio                                    \
        sam/drivers/pmc                                    \
        sam/drivers/wdt                                    \
+       sam/drivers/uart                                   \
+       sam/drivers/usart                                  \
        sam/utils                                          \
        sam/utils/cmsis/sam4s/include                      \
        sam/utils/cmsis/sam4s/source/templates             \

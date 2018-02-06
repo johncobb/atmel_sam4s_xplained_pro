@@ -164,7 +164,7 @@ CPPFLAGS = \
        -D scanf=iscanf
 
 # Extra flags to use when linking
-LDFLAGS = \
+LDFLAGS = --specs=nano.specs -lc -u _printf_float \
 
 # Pre- and post-build commands
 PREBUILD_CMD = 

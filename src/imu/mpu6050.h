@@ -16,10 +16,21 @@
 #define MPU6050_WHO_AM_I_BIT            6
 #define MPU6050_WHO_AM_I_LENGTH         6
 
+#define MPU6050_RA_MOT_DETECT_CTRL      0x69
+#define MPU6050_RA_USER_CTRL            0x6A
 #define MPU6050_RA_PWR_MGMT_1           0x6B
 #define MPU6050_RA_GYRO_CONFIG          0x1B
 #define MPU6050_RA_ACCEL_CONFIG         0x1C
+#define MPU6050_RA_INT_PIN_CFG          0x37
 #define MPU6050_RA_INT_ENABLE           0x38
+#define MPU6050_RA_FF_THR               0x1D
+#define MPU6050_RA_FF_DUR               0x1E
+#define MPU6050_RA_MOT_THR              0x1F
+#define MPU6050_RA_MOT_DUR              0x20
+#define MPU6050_RA_ZRMOT_THR            0x21
+#define MPU6050_RA_ZRMOT_DUR            0x22
+#define MPU6050_RA_INT_STATUS           0x3A
+
 
 
 #define MPU6050_PWR1_CLKSEL_BIT         2
@@ -79,5 +90,30 @@ bool imu_get_int_motion_enabled(void);
 void imu_set_int_freefall_enabled(bool state);
 bool imu_get_int_freefall_enabled(void);
 
+void imu_set_motion_detection_threshold(uint8_t threshold);
+uint8_t imu_get_motion_detection_threshold(void);
+
+void imu_set_motion_detection_duration(uint8_t duration);
+uint8_t imu_get_motion_detection_duration(void);
+
+void imu_set_zero_motion_detection_threshold(uint8_t threshold);
+uint8_t imu_get_zero_motion_detection_threshold(void);
+
+void imu_set_zero_motion_detection_duration(uint8_t duration);
+uint8_t imu_get_zero_motion_detection_duration(void);
+
+void imu_set_freefall_detection_threshold(uint8_t threshold);
+uint8_t imu_get_freefall_detection_threshold(void);
+
+void imu_set_freefall_detection_duration(uint8_t duration);
+uint8_t imu_get_freefall_detection_duration(void);
+
+bool imu_set_i2c_master_mode_enabled(bool state);
+void imu_get_i2c_master_mode_enabled(void);
+
+void imu_set_accel_power_on_delay(uint8_t delay);
+uint8_t imu_get_accel_power_on_delay(void);
+
+uint8_t imu_get_int_status(void);
 
 #endif

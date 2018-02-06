@@ -6,11 +6,14 @@
 
 /*
 https://github.com/jarzebski/Arduino-MPU6050/blob/master/MPU6050.cpp
+http://community.atmel.com/forum/samc21-printf-not-printing-float-values
+
 */
 
 static uint8_t imu_buffer[16] = {0};
 
 void write_register8(uint8_t reg, uint8_t value);
+void write_register16(uint8_t reg, int16_t value);
 uint8_t read_register8(uint8_t reg);
 void write_register_bit(uint8_t reg, uint8_t pos, bool state);
 bool read_register_bit(uint8_t reg, uint8_t pos);
@@ -46,9 +49,38 @@ void write_register8(uint8_t reg, uint8_t value)
     }
 
     delay_ms(TWI_WAIT_TIME);
+}
 
-    return status;
 
+void write_register16(uint8_t reg, int16_t value)
+{
+
+    twi_options_t opt;
+    twi_packet_t packet_tx;
+
+	/* Configure the options of TWI driver */
+	opt.master_clk = sysclk_get_peripheral_hz();
+    opt.speed      = TWI_CLK;
+
+    memset(imu_buffer, 0, sizeof(imu_buffer));
+
+    packet_tx.chip = IMU_ADDRESS;
+    packet_tx.addr[0] = reg;
+    packet_tx.addr_length = sizeof(uint8_t);
+    packet_tx.buffer = &value;
+    // packet_tx.length = 1;
+    packet_tx.length = sizeof(int16_t);
+
+
+    uint32_t status = twi_master_write(IMU_TWI, &packet_tx);
+
+    // printf("write_register status: %d\r\n", status);
+    
+    if (status == TWI_SUCCESS) {
+        puts("write_register: success\r\n");
+    }
+
+    delay_ms(TWI_WAIT_TIME);
 }
 
 uint8_t read_register8(uint8_t reg)
@@ -82,7 +114,7 @@ uint8_t read_register8(uint8_t reg)
 
 int16_t read_register16(uint8_t reg)
 {
-    uint16_t value;
+    int16_t value;
     twi_packet_t packet_rx;
 
     memset(imu_buffer, 0, sizeof(imu_buffer));
@@ -125,8 +157,8 @@ void write_register_bit(uint8_t reg, uint8_t pos, bool state)
     }
 
     write_register8(reg, value);
-
 }
+
 bool read_register_bit(uint8_t reg, uint8_t pos)
 {
     uint8_t value;
@@ -175,7 +207,7 @@ void imu_who_am_i(void)
 
 int16_t imu_get_temperature(void)
 {
-    uint16_t T;
+    int16_t T;
     T = read_register16(MPU6050_RA_TEMP_OUT_H);
     return T;
 }
@@ -308,6 +340,112 @@ bool imu_get_int_freefall_enabled(void)
 {
     read_register_bit(MPU6050_RA_INT_ENABLE, 7);
 }
+
+void imu_set_motion_detection_threshold(uint8_t threshold)
+{
+    write_register8(MPU6050_RA_MOT_THR, threshold);
+}
+
+uint8_t imu_get_motion_detection_threshold(void)
+{
+    return read_register8(MPU6050_RA_MOT_THR);
+}
+
+void imu_set_motion_detection_duration(uint8_t duration)
+{
+    write_register8(MPU6050_RA_MOT_DUR, duration);
+}
+
+uint8_t imu_get_motion_detection_duration(void)
+{
+    return read_register8(MPU6050_RA_MOT_DUR);
+}
+
+void imu_set_zero_motion_detection_threshold(uint8_t threshold)
+{
+    write_register8(MPU6050_RA_ZRMOT_THR, threshold);
+}
+
+uint8_t imu_get_zero_motion_detection_threshold(void)
+{
+    return read_register8(MPU6050_RA_ZRMOT_THR);
+}
+
+void imu_set_zero_motion_detection_duration(uint8_t duration)
+{
+    write_register8(MPU6050_RA_ZRMOT_DUR, duration);
+}
+
+uint8_t imu_get_zero_motion_detection_duration(void)
+{
+    return read_register8(MPU6050_RA_ZRMOT_DUR);
+}
+
+void imu_set_freefall_detection_threshold(uint8_t threshold)
+{
+    write_register8(MPU6050_RA_FF_THR, threshold);
+}
+
+uint8_t imu_get_freefall_detection_threshold(void)
+{
+    return read_register8(MPU6050_RA_FF_THR);
+}
+
+void imu_set_freefall_detection_duration(uint8_t duration)
+{
+    write_register8(MPU6050_RA_FF_DUR, duration);
+}
+
+uint8_t imu_get_freefall_detection_duration(void)
+{
+    return read_register8(MPU6050_RA_FF_DUR);
+}
+
+bool imu_set_i2c_master_mode_enabled(bool state)
+{
+    write_register_bit(MPU6050_RA_USER_CTRL, 5, state);
+}
+void imu_get_i2c_master_mode_enabled(void)
+{
+    read_register_bit(MPU6050_RA_USER_CTRL, 5);
+}
+
+bool imu_set_i2c_bypass_enabled(bool state)
+{
+    write_register_bit(MPU6050_RA_INT_PIN_CFG, 1, state);
+}
+void imu_get_i2c_bypass_enabled(void)
+{
+    read_register_bit(MPU6050_RA_INT_PIN_CFG, 1);
+}
+
+uint8_t imu_get_accel_power_on_delay(void)
+{
+    uint8_t value;
+
+    value = read_register8(MPU6050_RA_MOT_DETECT_CTRL);
+    value &= 0b00110000; // mask
+    value >>= 4;
+
+    return (uint8_t)value;
+}
+
+void imu_set_accel_power_on_delay(uint8_t delay)
+{
+    uint8_t value;
+
+    value = read_register8(MPU6050_RA_MOT_DETECT_CTRL);
+    value &= 0b11001111; // mask
+    value |= (delay << 4);
+
+    write_register8(MPU6050_RA_MOT_DETECT_CTRL, value);
+}
+
+uint8_t imu_get_int_status(void)
+{
+    return read_register8(MPU6050_RA_INT_STATUS);
+}
+
 
 // void imu_set_clock_source(uint8_t source)
 // {

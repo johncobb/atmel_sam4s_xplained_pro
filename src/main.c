@@ -46,9 +46,9 @@ int main(void)
     imu_probe();
     imu_who_am_i();
 
-    // float temperature = (float)imu_get_temperature()/340 + 36.53;
-    // printf("temperature: %f\r\n", temperature);
-    printf("imu_temperature: %d\r\n", imu_get_temperature());
+    float temperature = (float)imu_get_temperature()/340 + 36.53;
+    printf("temperature: %f\r\n", temperature);
+    // printf("imu_temperature: %d\r\n", imu_get_temperature());
 
     imu_set_clock_source(MPU6050_CLOCK_PLL_XGYRO);
     printf("clock_source: %d\r\n", imu_get_clock_source());

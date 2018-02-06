@@ -34,12 +34,34 @@ int main(void)
     pmc_enable_periph_clk(IMU_TWI_ID);
 
     configure_console();
-    puts("sam4d32c imu demo...\r\n");
+    puts("\r\n\r\nsam4d32c imu demo...\r\n");
 
+    for (int i=0; i<5; i++) {
+        puts(".");
+        delay_ms(250);
+    }
+    puts("\r\n");
 
     imu_init();
     imu_probe();
     imu_who_am_i();
+
+    // float temperature = (float)imu_get_temperature()/340 + 36.53;
+    // printf("temperature: %f\r\n", temperature);
+    printf("imu_temperature: %d\r\n", imu_get_temperature());
+
+    imu_set_clock_source(MPU6050_CLOCK_PLL_XGYRO);
+    printf("clock_source: %d\r\n", imu_get_clock_source());
+    imu_set_gyro_scale(MPU6050_GYRO_FS_250);
+    printf("imu_gyro_scale: %d\r\n", imu_get_gyro_scale());
+
+    imu_set_accel_range(MPU6050_ACCEL_FS_2);
+    printf("imu_accel_range: %d\r\n", imu_get_accel_range());
+
+    imu_set_sleep_enabled(false);
+    printf("imu_sleep_enabled: %d\r\n", imu_get_sleep_enabled());
+
+    
     // imu_set_clock_source(MPU6050_CLOCK_PLL_XGYRO);
 
     while(1) {

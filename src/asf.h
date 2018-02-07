@@ -55,6 +55,7 @@
 // From module: Common SAM compiler driver
 #include <compiler.h>
 #include <status_codes.h>
+#include <math.h>
 
 #include <delay.h>
 #include <gpio.h>

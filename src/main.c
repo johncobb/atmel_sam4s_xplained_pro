@@ -44,25 +44,67 @@ int main(void)
 
     imu_init();
     imu_probe();
-    imu_who_am_i();
+    
+    // imu_who_am_i();
 
-    float temperature = (float)imu_get_temperature()/340 + 36.53;
-    printf("temperature: %f\r\n", temperature);
-    // printf("imu_temperature: %d\r\n", imu_get_temperature());
+    // float temperature = (float)imu_get_temperature()/340 + 36.53;
+    // printf("temperature: %f\r\n", temperature);
 
-    imu_set_clock_source(MPU6050_CLOCK_PLL_XGYRO);
-    printf("clock_source: %d\r\n", imu_get_clock_source());
-    imu_set_gyro_scale(MPU6050_GYRO_FS_250);
-    printf("imu_gyro_scale: %d\r\n", imu_get_gyro_scale());
+    // imu_set_clock_source(MPU6050_CLOCK_PLL_XGYRO);
+    // printf("clock_source: %d\r\n", imu_get_clock_source());
+    // imu_set_gyro_scale(MPU6050_GYRO_FS_250);
+    // printf("imu_gyro_scale: %d\r\n", imu_get_gyro_scale());
 
-    imu_set_accel_range(MPU6050_ACCEL_FS_2);
-    printf("imu_accel_range: %d\r\n", imu_get_accel_range());
+    // imu_set_accel_range(MPU6050_ACCEL_FS_2);
+    // printf("imu_accel_range: %d\r\n", imu_get_accel_range());
 
-    imu_set_sleep_enabled(false);
-    printf("imu_sleep_enabled: %d\r\n", imu_get_sleep_enabled());
+    // imu_set_sleep_enabled(false);
+    // printf("imu_sleep_enabled: %d\r\n", imu_get_sleep_enabled());
+
+    int16_t ax, ay, az;
+    int16_t gx, gy, gz;
+    // t_fp_vector gyro;
+    // t_fp_vector accel;
+
+    if (imu_begin(MPU6050_GYRO_FS_250, MPU6050_ACCEL_FS_2)) {
+        imu_log_settings();
+        // t_bool_activity a;
+        // imu_read_activities(&a);
+
+        // printf("overflow, freefall, inactivity, activity, dataready\r\n");
+        // printf("%d,%d,%d,%d,%d\r\n", a.is_overflow, a.is_freefall, a.is_inactivity, a.is_activity, a.is_data_ready);
+        // printf("negX, posX, negY, posY, negZ, posZ\r\n");
+        // printf("%d,%d,%d,%d,%d,%d\r\n", a.is_neg_activity_on_x, a.is_pos_activity_on_x, a.is_neg_activity_on_y, a.is_neg_activity_on_y, a.is_neg_activity_on_z, a.is_pos_activity_on_z);
+
+        while(true) {
+
+
+            imu_read_rotation(&gx, &gy, &gz);
+            imu_read_acceleration(&ax, &ay, &az);
+
+            float gyro_x = (float)gx;
+            float gyro_y = (float)gy;
+            float gyro_z = (float)gz;
+            float accel_x = (float)ax;
+            float accel_y = (float)ay;
+            float accel_z = (float)az;
+
+            gyro_x = ((float) gx)/131*M_PI/180.0f;
+            gyro_y = ((float) gy)/131*M_PI/180.0f;
+            gyro_z = ((float) gz)/131*M_PI/180.0f;
+
+            float accel_angle_y = atan2(accel_x, sqrt( pow(accel_y, 2) + pow(accel_z, 2))) * 180.0f / M_PI;
+            float accel_angle_x = atan2(accel_y, sqrt( pow(accel_x, 2) + pow(accel_z, 2))) * 180.0f / M_PI;
+            float accel_angle_z = 0;
+    
+            printf("gyro x/y/z: %d %d %d\r\n", gyro_x, gyro_y, gyro_z);
+            delay_ms(100);
+        }
+    }
+
 
     
-    // imu_set_clock_source(MPU6050_CLOCK_PLL_XGYRO);
+
 
     while(1) {
 

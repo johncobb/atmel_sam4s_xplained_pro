@@ -133,6 +133,7 @@ uint8_t imu_get_int_status(void);
 
 
 
+
 typedef struct fp_vector
 {
     float x_axis;
@@ -155,20 +156,47 @@ typedef struct bool_activity
     bool is_data_ready;
 } t_bool_activity;
 
-t_fp_vector xyz;
 
-t_fp_vector raw_accel;
+#define GYRO_SAMPLES        50
+
+
+bool use_calibrate;
+float actual_threshold;
+float dps_per_digit;
+float range_per_digit;
+
+
+// Raw vectors
 t_fp_vector raw_gyro;
+t_fp_vector raw_accel;
 
-t_fp_vector normalized_accel;
-t_fp_vector normalized_gyro;
+// Normalized vectors
+t_fp_vector norm_gyro;
+t_fp_vector norm_accel;
+
+// Delta vectors
+t_fp_vector threshold_gyro;
+t_fp_vector delta_gyro;
+
+// Threshold
+t_fp_vector threshold;
 
 t_bool_activity imu_activities;
 
+void imu_calibrate_gyro(uint8_t samples);
 void imu_read_activities(t_bool_activity *a);
 void imu_log_settings(void);
-void imu_read_rotation(int16_t *x, int16_t *y, int16_t *z);
+void imu_read_gyro(int16_t *x, int16_t *y, int16_t *z);
+void imu_read_raw_gyro(void);
+t_fp_vector imu_read_normalized_gyro(void);
+
 // void imu_read_rotation(t_fp_vector *vect);
 void imu_read_acceleration(int16_t *x, int16_t *y, int16_t *z);
+void imu_read_raw_acceleration(void);
+void imu_read_normalized_acceleration(void);
+t_fp_vector imu_read_scaled_acceleration(void);
+
+void imu_set_threshold(uint8_t multiple);
+uint8_t get_threshold(void);
 
 #endif

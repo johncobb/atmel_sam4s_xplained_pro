@@ -61,7 +61,9 @@ CSRCS = \
        common/utils/stdio/read.c                          \
        common/utils/stdio/write.c                          \
        ../main.c                                          \
+       ../config.c                                          \
        ../imu/mpu6050.c                               \
+       ../imu/gyro.c                               \
        sam/boards/sam4s_xplained_pro/init.c               \
        sam/drivers/twi/twi.c                                  \
        sam/drivers/pio/pio.c                              \

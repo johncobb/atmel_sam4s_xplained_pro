@@ -11,6 +11,30 @@ http://community.atmel.com/forum/samc21-printf-not-printing-float-values
 */
 
 static uint8_t imu_buffer[16] = {0};
+int16_t ax, ay, az;
+int16_t gx, gy, gz;
+
+bool use_calibrate = false;
+float actual_threshold = 0;
+float dps_per_digit = 0;
+float range_per_digit;
+
+// Raw vectors
+t_fp_vector raw_gyro;
+t_fp_vector raw_accel;
+
+// Normalized vectors
+t_fp_vector norm_gyro;
+t_fp_vector norm_accel;
+
+// Delta vectors
+t_fp_vector threshold_gyro;
+t_fp_vector delta_gyro;
+
+// Threshold
+t_fp_vector threshold;
+
+t_bool_activity imu_activities;
 
 
 void write_register8(uint8_t reg, uint8_t value);
@@ -205,12 +229,30 @@ void imu_probe(void)
 
 bool imu_begin(uint8_t scale, uint8_t range)
 {
+    // Reset calibration values
+    delta_gyro.x_axis = 0;
+    delta_gyro.y_axis = 0;
+    delta_gyro.z_axis = 0;
+    use_calibrate = false;
+
+    // Reset threshold values
+    threshold_gyro.x_axis = 0;
+    threshold_gyro.y_axis = 0;
+    threshold_gyro.z_axis = 0;
+    actual_threshold = 0;
+
     if (imu_who_am_i() != 0x68) {
         return false;
     }
+
+    // Set clock source
     imu_set_clock_source(MPU6050_CLOCK_PLL_XGYRO);
+
+    // Set scale and range
     imu_set_gyro_scale(scale);
     imu_set_accel_range(range);
+
+    // Disable sleep mode
     imu_set_sleep_enabled(false);
 
     return true;
@@ -235,8 +277,6 @@ int16_t imu_get_temperature(void)
     T = read_register16(MPU6050_RA_TEMP_OUT_H);
     return T;
 }
-
-
 
 void imu_set_clock_source(uint8_t source)
 {
@@ -263,6 +303,21 @@ void imu_set_gyro_scale(uint8_t scale)
 {
     uint8_t value;
 
+    switch (scale) {
+        case MPU6050_GYRO_FS_250:
+            dps_per_digit = .007633f;
+            break;
+        case MPU6050_GYRO_FS_500:
+            dps_per_digit = .015267f;
+            break;
+        case MPU6050_GYRO_FS_1000:
+            dps_per_digit = .030487f;
+            break;
+        case MPU6050_GYRO_FS_2000:
+            dps_per_digit = .060975f;
+            break;
+    }
+
     value = read_register8(MPU6050_RA_GYRO_CONFIG);
     value &= 0b11100111; // mask
     value |= (scale << 3);
@@ -284,6 +339,21 @@ uint8_t imu_get_gyro_scale(void)
 void imu_set_accel_range(uint8_t range)
 {
     uint8_t value;
+
+    switch (range) {
+        case MPU6050_ACCEL_FS_2:
+        	range_per_digit = .000061f;
+            break;
+        case MPU6050_ACCEL_FS_4:
+        	range_per_digit = .000122f;
+            break;   
+        case MPU6050_ACCEL_FS_8:
+        	range_per_digit = .000244f;
+            break;   
+        case MPU6050_ACCEL_FS_16:
+        	range_per_digit = .0004882f;
+	        break;                                                           
+    }
 
     value = read_register8(MPU6050_RA_ACCEL_CONFIG);
     value &= 0b11100111; // mask
@@ -494,20 +564,7 @@ void imu_read_activities(t_bool_activity *a)
 
 }
 
-// void imu_read_rotation(t_fp_vector *vect)
-// {
-//     uint8_t i2c_buffer[6];
-//     memset(i2c_buffer, 0, sizeof(i2c_buffer));
-    
-//     read_bytes(MPU6050_RA_GYRO_XOUT_H, 6, i2c_buffer);
-
-//     *vect->x_axis = (float) ((((int16_t)i2c_buffer[0]) << 8) | i2c_buffer[1]);
-//     *vect->y_axis = (float) ((((int16_t)i2c_buffer[2]) << 8) | i2c_buffer[3]);
-//     *vect->z_axis = (float) ((((int16_t)i2c_buffer[4]) << 8) | i2c_buffer[5]);
-
-// }
-
-void imu_read_rotation(int16_t *x, int16_t *y, int16_t *z)
+void imu_read_gyro(int16_t *x, int16_t *y, int16_t *z)
 {
     uint8_t i2c_buffer[6];
     memset(i2c_buffer, 0, sizeof(i2c_buffer));
@@ -520,6 +577,40 @@ void imu_read_rotation(int16_t *x, int16_t *y, int16_t *z)
 
 }
 
+void imu_read_raw_gyro(void)
+{
+    imu_read_gyro(&gx, &gy, &gz);
+    raw_gyro.x_axis = (float)gx;
+    raw_gyro.y_axis = (float)gy;
+    raw_gyro.z_axis = (float)gz;
+
+}
+
+t_fp_vector imu_read_normalized_gyro(void)
+{
+    imu_read_raw_gyro();
+
+    if (use_calibrate) {
+        norm_gyro.x_axis = (raw_gyro.x_axis - delta_gyro.x_axis) * dps_per_digit;
+        norm_gyro.y_axis = (raw_gyro.y_axis - delta_gyro.y_axis) * dps_per_digit;
+        norm_gyro.z_axis = (raw_gyro.z_axis - delta_gyro.z_axis) * dps_per_digit;
+    } else {
+        norm_gyro.x_axis = raw_gyro.x_axis  * dps_per_digit;
+        norm_gyro.y_axis = raw_gyro.y_axis  * dps_per_digit;
+        norm_gyro.z_axis = raw_gyro.z_axis  * dps_per_digit;
+    }
+
+    if (actual_threshold) {
+        if (abs(norm_gyro.x_axis) < threshold_gyro.x_axis) norm_gyro.x_axis = 0;
+        if (abs(norm_gyro.y_axis) < threshold_gyro.y_axis) norm_gyro.y_axis = 0;
+        if (abs(norm_gyro.z_axis) < threshold_gyro.z_axis) norm_gyro.z_axis = 0;
+    }
+
+    return norm_gyro;
+}
+
+
+
 void imu_read_acceleration(int16_t *x, int16_t *y, int16_t *z)
 {
     uint8_t i2c_buffer[6];
@@ -530,9 +621,34 @@ void imu_read_acceleration(int16_t *x, int16_t *y, int16_t *z)
     *x = (((int16_t)i2c_buffer[0]) << 8) | i2c_buffer[1];
     *y = (((int16_t)i2c_buffer[2]) << 8) | i2c_buffer[3];
     *z = (((int16_t)i2c_buffer[4]) << 8) | i2c_buffer[5];
-
 }
 
+void imu_read_raw_acceleration(void)
+{
+    imu_read_acceleration(&ax, &ay, &az);
+    raw_accel.x_axis = (float)ax;
+    raw_accel.y_axis = (float)ay;
+    raw_accel.z_axis = (float)az;
+}
+
+void imu_read_normalized_acceleration(void)
+{
+    imu_read_raw_acceleration();
+
+    norm_accel.x_axis = raw_accel.x_axis * range_per_digit * 9.80665f;
+    norm_accel.y_axis = raw_accel.y_axis * range_per_digit * 9.80665f;
+    norm_accel.z_axis = raw_accel.z_axis * range_per_digit * 9.80665f;
+}
+
+t_fp_vector imu_read_scaled_acceleration(void)
+{
+    imu_read_raw_acceleration();
+    norm_accel.x_axis = raw_accel.x_axis * range_per_digit;
+    norm_accel.y_axis = raw_accel.y_axis * range_per_digit;
+    norm_accel.z_axis = raw_accel.z_axis * range_per_digit;
+
+    return norm_accel;
+}
 
 void imu_log_settings(void)
 {
@@ -562,5 +678,77 @@ void imu_log_settings(void)
         printf("2000 dps\r\n");
         break;
     }
+    printf("use_calibrate: %d\r\n", use_calibrate);
+    printf("actual_threshold: %f\r\n", actual_threshold);
+    printf("dps_per_digit: %f\r\n", dps_per_digit);
+    printf("range_per_digit: %f\r\n", range_per_digit);
 
+}
+
+
+void imu_calibrate_gyro(uint8_t samples)
+{
+	use_calibrate = true;
+
+	float sum_x = 0;
+	float sum_y = 0;
+	float sum_z = 0;
+	float sigma_x = 0;
+	float sigma_y = 0;
+	float sigma_z = 0;
+
+	for (uint8_t i=0; i<samples; i++) {
+
+        imu_read_raw_gyro();
+
+		sum_x += raw_gyro.x_axis;
+		sum_y += raw_gyro.y_axis;
+		sum_z += raw_gyro.z_axis;
+
+        // Sum
+		sigma_x += raw_gyro.x_axis * raw_gyro.x_axis;
+		sigma_y += raw_gyro.y_axis * raw_gyro.y_axis;
+		sigma_z += raw_gyro.z_axis * raw_gyro.z_axis;
+
+		delay_ms(5);
+	}
+
+	// Calculate delta vectors
+	delta_gyro.x_axis = sum_x/samples;
+	delta_gyro.y_axis = sum_y/samples;
+	delta_gyro.z_axis = sum_z/samples;
+
+	// Calculate threshold vectors
+	threshold.x_axis = sqrt((sigma_x/50) - (delta_gyro.x_axis * delta_gyro.x_axis));
+	threshold.y_axis = sqrt((sigma_y/50) - (delta_gyro.y_axis * delta_gyro.y_axis));
+	threshold.z_axis = sqrt((sigma_z/50) - (delta_gyro.z_axis * delta_gyro.z_axis));
+
+	if (actual_threshold > 0) {
+		imu_set_threshold(actual_threshold);
+	}
+
+}
+
+uint8_t get_threshold(void)
+{
+	return actual_threshold;
+}
+
+void imu_set_threshold(uint8_t multiple)
+{
+	if (multiple > 0) {
+		if (!use_calibrate) {
+			imu_calibrate_gyro(GYRO_SAMPLES);
+		}
+
+		threshold_gyro.x_axis = threshold.x_axis * multiple;
+		threshold_gyro.y_axis = threshold.y_axis * multiple;
+		threshold_gyro.z_axis = threshold.z_axis * multiple;
+	} else {
+		threshold_gyro.x_axis = 0;
+		threshold_gyro.y_axis = 0;
+		threshold_gyro.z_axis = 0;
+	}
+
+	actual_threshold = multiple;
 }

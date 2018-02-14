@@ -99,13 +99,9 @@ int main(void)
     float last_gyro_angle_z = 0.0f;
 
     if (imu_begin(MPU6050_GYRO_FS_250, MPU6050_ACCEL_FS_2)) {
-        
 
-    
         imu_calibrate_gyro(GYRO_SAMPLES);
-
         imu_set_threshold(0);
-
         imu_log_settings();
 
 
@@ -116,8 +112,6 @@ int main(void)
             imu_read_normalized_gyro();
             imu_read_normalized_acceleration();
 
-
-
             float gyro_x = (norm_gyro.x_axis*M_PI)/180.0f;
             float gyro_y = (norm_gyro.y_axis*M_PI)/180.0f;
             float gyro_z = (norm_gyro.z_axis*M_PI)/180.0f;
@@ -127,19 +121,6 @@ int main(void)
             float accel_angle_y = atan2(norm_accel.x_axis, sqrt( pow(norm_accel.y_axis, 2) + pow(norm_accel.z_axis, 2))) * 180.0f / M_PI;
             float accel_angle_x = atan2(norm_accel.y_axis, sqrt( pow(norm_accel.x_axis, 2) + pow(norm_accel.z_axis, 2))) * 180.0f / M_PI;
             float accel_angle_z = 0;
-
-            // imu_read_raw_gyro();
-            // imu_read_raw_acceleration();
-
-            // float gyro_x = raw_gyro.x_axis/131*M_PI/180.0f;
-            // float gyro_y = raw_gyro.y_axis/131*M_PI/180.0f;
-            // float gyro_z = raw_gyro.z_axis/131*M_PI/180.0f;
-
-            // float accel_angle_y = atan2(raw_accel.x_axis, sqrt( pow(raw_accel.y_axis, 2) + pow(raw_accel.z_axis, 2))) * 180.0f / M_PI;
-            // float accel_angle_x = atan2(raw_accel.y_axis, sqrt( pow(raw_accel.x_axis, 2) + pow(raw_accel.z_axis, 2))) * 180.0f / M_PI;
-            // float accel_angle_z = 0;
-
-
 
             // Compute filtered angles
             clock_time_t delta_t = (t_now-last_time_read);

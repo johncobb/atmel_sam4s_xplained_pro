@@ -1,8 +1,9 @@
 #include <asf.h>
-
 #include <stdio.h>
 #include <string.h>
+#include "imu.h"
 #include "mpu6050.h"
+
 
 /*
 https://github.com/jarzebski/Arduino-MPU6050/blob/master/MPU6050.cpp
@@ -10,31 +11,31 @@ http://community.atmel.com/forum/samc21-printf-not-printing-float-values
 
 */
 
-static uint8_t imu_buffer[16] = {0};
-int16_t ax, ay, az;
-int16_t gx, gy, gz;
+// static uint8_t mpu_buffer[16] = {0};
+// int16_t ax, ay, az;
+// int16_t gx, gy, gz;
 
-bool use_calibrate = false;
-float actual_threshold = 0;
-float dps_per_digit = 0;
-float range_per_digit;
+// bool use_calibrate = false;
+// float actual_threshold = 0;
+// float dps_per_digit = 0;
+// float range_per_digit;
 
-// Raw vectors
-t_fp_vector raw_gyro;
-t_fp_vector raw_accel;
+// // Raw vectors
+// t_fp_vector raw_gyro;
+// t_fp_vector raw_accel;
 
-// Normalized vectors
-t_fp_vector norm_gyro;
-t_fp_vector norm_accel;
+// // Normalized vectors
+// t_fp_vector norm_gyro;
+// t_fp_vector norm_accel;
 
-// Delta vectors
-t_fp_vector threshold_gyro;
-t_fp_vector delta_gyro;
+// // Delta vectors
+// t_fp_vector threshold_gyro;
+// t_fp_vector delta_gyro;
 
-// Threshold
-t_fp_vector threshold;
+// // Threshold
+// t_fp_vector threshold;
 
-t_bool_activity imu_activities;
+// t_bool_activity mpu_activities;
 
 
 void write_register8(uint8_t reg, uint8_t value);
@@ -96,12 +97,12 @@ uint8_t read_register8(uint8_t reg)
     uint8_t value = 0;
     twi_packet_t packet_rx;
 
-    memset(imu_buffer, 0, sizeof(imu_buffer));
+    memset(mpu_buffer, 0, sizeof(mpu_buffer));
 
     packet_rx.chip = IMU_ADDRESS;
     packet_rx.addr[0] = reg;
     packet_rx.addr_length = sizeof(uint8_t);
-    packet_rx.buffer = &imu_buffer;
+    packet_rx.buffer = &mpu_buffer;
     packet_rx.length = sizeof(uint8_t);
 
     uint32_t status = twi_master_read(IMU_TWI, &packet_rx);
@@ -110,7 +111,7 @@ uint8_t read_register8(uint8_t reg)
     
     if (status == TWI_SUCCESS) {
         // puts("read_register: success\r\n");
-        value = imu_buffer[0];
+        value = mpu_buffer[0];
     }
 
     delay_ms(TWI_WAIT_TIME);
@@ -123,12 +124,12 @@ int16_t read_register16(uint8_t reg)
     int16_t value = 0;
     twi_packet_t packet_rx;
 
-    memset(imu_buffer, 0, sizeof(imu_buffer));
+    memset(mpu_buffer, 0, sizeof(mpu_buffer));
 
     packet_rx.chip = IMU_ADDRESS;
     packet_rx.addr[0] = reg;
     packet_rx.addr_length = sizeof(uint8_t);
-    packet_rx.buffer = &imu_buffer;
+    packet_rx.buffer = &mpu_buffer;
 
     // packet_rx.length = 1;
     packet_rx.length = sizeof(uint16_t);
@@ -139,8 +140,8 @@ int16_t read_register16(uint8_t reg)
     
     if (status == TWI_SUCCESS) {
         // puts("read_register: success\r\n");
-        uint8_t value_high = imu_buffer[0];
-        uint8_t value_low = imu_buffer[1];
+        uint8_t value_high = mpu_buffer[0];
+        uint8_t value_low = mpu_buffer[1];
 
         value = value_high << 8 | value_low;
     }
@@ -155,7 +156,7 @@ uint8_t read_bytes(uint8_t reg, int8_t length, uint8_t *data)
     // uint8_t value = 0;
     twi_packet_t packet_rx;
 
-    memset(imu_buffer, 0, sizeof(imu_buffer));
+    memset(mpu_buffer, 0, sizeof(mpu_buffer));
 
     packet_rx.chip = IMU_ADDRESS;
     packet_rx.addr[0] = reg;
@@ -169,7 +170,7 @@ uint8_t read_bytes(uint8_t reg, int8_t length, uint8_t *data)
     
     if (status == TWI_SUCCESS) {
         // puts("read_register: success\r\n");
-        // value = imu_buffer[0];
+        // value = mpu_buffer[0];
     }
 
     delay_ms(TWI_WAIT_TIME);
@@ -199,7 +200,7 @@ bool read_register_bit(uint8_t reg, uint8_t pos)
     return ((value >> pos) & 1);
 }
 
-void imu_init(void)
+bool mpu_init(void)
 {
     twi_options_t opt;
 
@@ -208,26 +209,38 @@ void imu_init(void)
     opt.speed      = TWI_CLK;
 
     if (twi_master_init(IMU_TWI, &opt) != TWI_SUCCESS) {
+        
         puts("twi_master_init: failed\r\n");
+        // Give I2C time to settle
+        delay_ms(TWI_WAIT_TIME);
+        return false;
         
     } else {
         puts("twi_master_init: success\r\n");
+        // Give I2C time to settle
+        delay_ms(TWI_WAIT_TIME);
+        return true;
     }
-    // Give I2C time to settle
-    delay_ms(TWI_WAIT_TIME);
+    
 }
 
-void imu_probe(void)
+bool mpu_probe(void)
 {
     if (twi_probe(IMU_TWI, IMU_ADDRESS) != TWI_SUCCESS) {
         puts("twi_probe: failed\r\n");
+        // Give I2C time to settle
+        delay_ms(TWI_WAIT_TIME);
+        return false;
         
     } else {
         puts("twi_probe: success\r\n");
+        // Give I2C time to settle
+        delay_ms(TWI_WAIT_TIME);
+        return true;
     }
 }
 
-bool imu_begin(uint8_t scale, uint8_t range)
+bool mpu_begin(uint8_t scale, uint8_t range)
 {
     // Reset calibration values
     delta_gyro.x_axis = 0;
@@ -241,24 +254,24 @@ bool imu_begin(uint8_t scale, uint8_t range)
     threshold_gyro.z_axis = 0;
     actual_threshold = 0;
 
-    if (imu_who_am_i() != 0x68) {
+    if (mpu_who_am_i() != 0x68) {
         return false;
     }
 
     // Set clock source
-    imu_set_clock_source(MPU6050_CLOCK_PLL_XGYRO);
+    mpu_set_clock_source(MPU6050_CLOCK_PLL_XGYRO);
 
     // Set scale and range
-    imu_set_gyro_scale(scale);
-    imu_set_accel_range(range);
+    mpu_set_gyro_scale(scale);
+    mpu_set_accel_range(range);
 
     // Disable sleep mode
-    imu_set_sleep_enabled(false);
+    mpu_set_sleep_enabled(false);
 
     return true;
 }
 
-uint8_t imu_who_am_i(void)
+uint8_t mpu_who_am_i(void)
 {
     uint8_t value = read_register8(MPU6050_RA_WHO_AM_I);
 
@@ -271,14 +284,14 @@ uint8_t imu_who_am_i(void)
     return value;
 }
 
-int16_t imu_get_temperature(void)
+int16_t mpu_get_temperature(void)
 {
     int16_t T;
     T = read_register16(MPU6050_RA_TEMP_OUT_H);
     return T;
 }
 
-void imu_set_clock_source(uint8_t source)
+void mpu_set_clock_source(uint8_t source)
 {
     uint8_t value;
 
@@ -289,7 +302,7 @@ void imu_set_clock_source(uint8_t source)
     write_register8(MPU6050_RA_PWR_MGMT_1, value);
 }
 
-uint8_t imu_get_clock_source(void)
+uint8_t mpu_get_clock_source(void)
 {
     uint8_t value;
 
@@ -299,7 +312,7 @@ uint8_t imu_get_clock_source(void)
     return (uint8_t)value;
 }
 
-void imu_set_gyro_scale(uint8_t scale)
+void mpu_set_gyro_scale(uint8_t scale)
 {
     uint8_t value;
 
@@ -325,7 +338,7 @@ void imu_set_gyro_scale(uint8_t scale)
     write_register8(MPU6050_RA_GYRO_CONFIG, value);
 }
 
-uint8_t imu_get_gyro_scale(void)
+uint8_t mpu_get_gyro_scale(void)
 {
     uint8_t value;
 
@@ -336,7 +349,7 @@ uint8_t imu_get_gyro_scale(void)
     return (uint8_t)value;
 }
 
-void imu_set_accel_range(uint8_t range)
+void mpu_set_accel_range(uint8_t range)
 {
     uint8_t value;
 
@@ -362,7 +375,7 @@ void imu_set_accel_range(uint8_t range)
     write_register8(MPU6050_RA_ACCEL_CONFIG, value);
 }
 
-uint8_t imu_get_accel_range(void)
+uint8_t mpu_get_accel_range(void)
 {
     uint8_t value;
 
@@ -373,7 +386,7 @@ uint8_t imu_get_accel_range(void)
     return (uint8_t)value;
 }
 
-void imu_set_dlpf_mode(uint8_t mode)
+void mpu_set_dlpf_mode(uint8_t mode)
 {
     uint8_t value;
 
@@ -384,7 +397,7 @@ void imu_set_dlpf_mode(uint8_t mode)
     write_register8(MPU6050_RA_ACCEL_CONFIG, value);
 }
 
-uint8_t imu_get_dlpf_mode(void)
+uint8_t mpu_get_dlpf_mode(void)
 {
     uint8_t value;
 
@@ -395,127 +408,127 @@ uint8_t imu_get_dlpf_mode(void)
     return (uint8_t)value;
 }
 
-void imu_set_sleep_enabled(bool state)
+void mpu_set_sleep_enabled(bool state)
 {
     write_register_bit(MPU6050_RA_PWR_MGMT_1, 6, state);
 }
 
-bool imu_get_sleep_enabled(void)
+bool mpu_get_sleep_enabled(void)
 {
     return read_register_bit(MPU6050_RA_PWR_MGMT_1, 6);
 }
 
-void imu_set_int_zero_motion_enabled(bool state)
+void mpu_set_int_zero_motion_enabled(bool state)
 {
     write_register_bit(MPU6050_RA_INT_ENABLE, 5, state);
 }
 
-bool imu_get_int_zero_motion_enabled(void)
+bool mpu_get_int_zero_motion_enabled(void)
 {
     return read_register_bit(MPU6050_RA_INT_ENABLE, 5);
 }
 
-void imu_set_int_motion_enabled(bool state)
+void mpu_set_int_motion_enabled(bool state)
 {
     write_register_bit(MPU6050_RA_INT_ENABLE, 6, state);
 }
 
-bool imu_get_int_motion_enabled(void)
+bool mpu_get_int_motion_enabled(void)
 {
     return read_register_bit(MPU6050_RA_INT_ENABLE, 6);
 }
 
-void imu_set_int_freefall_enabled(bool state)
+void mpu_set_int_freefall_enabled(bool state)
 {
     write_register_bit(MPU6050_RA_INT_ENABLE, 7, state);
 }
 
-bool imu_get_int_freefall_enabled(void)
+bool mpu_get_int_freefall_enabled(void)
 {
     return read_register_bit(MPU6050_RA_INT_ENABLE, 7);
 }
 
-void imu_set_motion_detection_threshold(uint8_t threshold)
+void mpu_set_motion_detection_threshold(uint8_t threshold)
 {
     write_register8(MPU6050_RA_MOT_THR, threshold);
 }
 
-uint8_t imu_get_motion_detection_threshold(void)
+uint8_t mpu_get_motion_detection_threshold(void)
 {
     return read_register8(MPU6050_RA_MOT_THR);
 }
 
-void imu_set_motion_detection_duration(uint8_t duration)
+void mpu_set_motion_detection_duration(uint8_t duration)
 {
     write_register8(MPU6050_RA_MOT_DUR, duration);
 }
 
-uint8_t imu_get_motion_detection_duration(void)
+uint8_t mpu_get_motion_detection_duration(void)
 {
     return read_register8(MPU6050_RA_MOT_DUR);
 }
 
-void imu_set_zero_motion_detection_threshold(uint8_t threshold)
+void mpu_set_zero_motion_detection_threshold(uint8_t threshold)
 {
     write_register8(MPU6050_RA_ZRMOT_THR, threshold);
 }
 
-uint8_t imu_get_zero_motion_detection_threshold(void)
+uint8_t mpu_get_zero_motion_detection_threshold(void)
 {
     return read_register8(MPU6050_RA_ZRMOT_THR);
 }
 
-void imu_set_zero_motion_detection_duration(uint8_t duration)
+void mpu_set_zero_motion_detection_duration(uint8_t duration)
 {
     write_register8(MPU6050_RA_ZRMOT_DUR, duration);
 }
 
-uint8_t imu_get_zero_motion_detection_duration(void)
+uint8_t mpu_get_zero_motion_detection_duration(void)
 {
     return read_register8(MPU6050_RA_ZRMOT_DUR);
 }
 
-void imu_set_freefall_detection_threshold(uint8_t threshold)
+void mpu_set_freefall_detection_threshold(uint8_t threshold)
 {
     write_register8(MPU6050_RA_FF_THR, threshold);
 }
 
-uint8_t imu_get_freefall_detection_threshold(void)
+uint8_t mpu_get_freefall_detection_threshold(void)
 {
     return read_register8(MPU6050_RA_FF_THR);
 }
 
-void imu_set_freefall_detection_duration(uint8_t duration)
+void mpu_set_freefall_detection_duration(uint8_t duration)
 {
     write_register8(MPU6050_RA_FF_DUR, duration);
 }
 
-uint8_t imu_get_freefall_detection_duration(void)
+uint8_t mpu_get_freefall_detection_duration(void)
 {
     return read_register8(MPU6050_RA_FF_DUR);
 }
 
-void imu_set_i2c_master_mode_enabled(bool state)
+void mpu_set_i2c_master_mode_enabled(bool state)
 {
     write_register_bit(MPU6050_RA_USER_CTRL, 5, state);
 }
 
-bool imu_get_i2c_master_mode_enabled(void)
+bool mpu_get_i2c_master_mode_enabled(void)
 {
     return read_register_bit(MPU6050_RA_USER_CTRL, 5);
 }
 
-void imu_set_i2c_bypass_enabled(bool state)
+void mpu_set_i2c_bypass_enabled(bool state)
 {
     write_register_bit(MPU6050_RA_INT_PIN_CFG, 1, state);
 }
 
-bool imu_get_i2c_bypass_enabled(void)
+bool mpu_get_i2c_bypass_enabled(void)
 {
     return read_register_bit(MPU6050_RA_INT_PIN_CFG, 1);
 }
 
-uint8_t imu_get_accel_power_on_delay(void)
+uint8_t mpu_get_accel_power_on_delay(void)
 {
     uint8_t value;
 
@@ -526,7 +539,7 @@ uint8_t imu_get_accel_power_on_delay(void)
     return (uint8_t)value;
 }
 
-void imu_set_accel_power_on_delay(uint8_t delay)
+void mpu_set_accel_power_on_delay(uint8_t delay)
 {
     uint8_t value;
 
@@ -537,12 +550,12 @@ void imu_set_accel_power_on_delay(uint8_t delay)
     write_register8(MPU6050_RA_MOT_DETECT_CTRL, value);
 }
 
-uint8_t imu_get_int_status(void)
+uint8_t mpu_get_int_status(void)
 {
     return read_register8(MPU6050_RA_INT_STATUS);
 }
 
-void imu_read_activities(t_bool_activity *a)
+void mpu_read_activities(t_bool_activity *a)
 {
     uint8_t data = read_register8(MPU6050_RA_INT_STATUS);
 
@@ -564,7 +577,7 @@ void imu_read_activities(t_bool_activity *a)
 
 }
 
-void imu_read_gyro(int16_t *x, int16_t *y, int16_t *z)
+void mpu_read_gyro(int16_t *x, int16_t *y, int16_t *z)
 {
     uint8_t i2c_buffer[6];
     memset(i2c_buffer, 0, sizeof(i2c_buffer));
@@ -577,18 +590,18 @@ void imu_read_gyro(int16_t *x, int16_t *y, int16_t *z)
 
 }
 
-void imu_read_raw_gyro(void)
+void mpu_read_raw_gyro(void)
 {
-    imu_read_gyro(&gx, &gy, &gz);
+    mpu_read_gyro(&gx, &gy, &gz);
     raw_gyro.x_axis = (float)gx;
     raw_gyro.y_axis = (float)gy;
     raw_gyro.z_axis = (float)gz;
 
 }
 
-t_fp_vector imu_read_normalized_gyro(void)
+t_fp_vector mpu_read_normalized_gyro(void)
 {
-    imu_read_raw_gyro();
+    mpu_read_raw_gyro();
 
     if (use_calibrate) {
         norm_gyro.x_axis = (raw_gyro.x_axis - delta_gyro.x_axis) * dps_per_digit;
@@ -611,7 +624,7 @@ t_fp_vector imu_read_normalized_gyro(void)
 
 
 
-void imu_read_acceleration(int16_t *x, int16_t *y, int16_t *z)
+void mpu_read_acceleration(int16_t *x, int16_t *y, int16_t *z)
 {
     uint8_t i2c_buffer[6];
     memset(i2c_buffer, 0, sizeof(i2c_buffer));
@@ -623,26 +636,26 @@ void imu_read_acceleration(int16_t *x, int16_t *y, int16_t *z)
     *z = (((int16_t)i2c_buffer[4]) << 8) | i2c_buffer[5];
 }
 
-void imu_read_raw_acceleration(void)
+void mpu_read_raw_acceleration(void)
 {
-    imu_read_acceleration(&ax, &ay, &az);
+    mpu_read_acceleration(&ax, &ay, &az);
     raw_accel.x_axis = (float)ax;
     raw_accel.y_axis = (float)ay;
     raw_accel.z_axis = (float)az;
 }
 
-void imu_read_normalized_acceleration(void)
+void mpu_read_normalized_acceleration(void)
 {
-    imu_read_raw_acceleration();
+    mpu_read_raw_acceleration();
 
     norm_accel.x_axis = raw_accel.x_axis * range_per_digit * 9.80665f;
     norm_accel.y_axis = raw_accel.y_axis * range_per_digit * 9.80665f;
     norm_accel.z_axis = raw_accel.z_axis * range_per_digit * 9.80665f;
 }
 
-t_fp_vector imu_read_scaled_acceleration(void)
+t_fp_vector mpu_read_scaled_acceleration(void)
 {
-    imu_read_raw_acceleration();
+    mpu_read_raw_acceleration();
     norm_accel.x_axis = raw_accel.x_axis * range_per_digit;
     norm_accel.y_axis = raw_accel.y_axis * range_per_digit;
     norm_accel.z_axis = raw_accel.z_axis * range_per_digit;
@@ -650,12 +663,12 @@ t_fp_vector imu_read_scaled_acceleration(void)
     return norm_accel;
 }
 
-void imu_log_settings(void)
+void mpu_log_settings(void)
 {
-    printf("Device: 0x%1x\r\n", imu_who_am_i());
-    printf("Sleep Mode: %s\r\n", imu_get_sleep_enabled() ? "Enabled" : "Disabled");
+    printf("Device: 0x%1x\r\n", mpu_who_am_i());
+    printf("Sleep Mode: %s\r\n", mpu_get_sleep_enabled() ? "Enabled" : "Disabled");
     printf("Clock Source: ");
-    switch (imu_get_clock_source()) {
+    switch (mpu_get_clock_source()) {
         case MPU6050_CLOCK_INTERNAL:
         printf("Internal 8MHz oscillator\r\n");
         break;
@@ -664,7 +677,7 @@ void imu_log_settings(void)
         break;
     }
     printf("Gyroscope: ");
-        switch (imu_get_gyro_scale()) {
+        switch (mpu_get_gyro_scale()) {
         case MPU6050_GYRO_FS_250:
         printf("250 dps\r\n");
         break;
@@ -686,7 +699,7 @@ void imu_log_settings(void)
 }
 
 
-void imu_calibrate_gyro(uint8_t samples)
+void mpu_calibrate_gyro(uint8_t samples)
 {
 	use_calibrate = true;
 
@@ -699,7 +712,7 @@ void imu_calibrate_gyro(uint8_t samples)
 
 	for (uint8_t i=0; i<samples; i++) {
 
-        imu_read_raw_gyro();
+        mpu_read_raw_gyro();
 
 		sum_x += raw_gyro.x_axis;
 		sum_y += raw_gyro.y_axis;
@@ -724,21 +737,21 @@ void imu_calibrate_gyro(uint8_t samples)
 	threshold.z_axis = sqrt((sigma_z/50) - (delta_gyro.z_axis * delta_gyro.z_axis));
 
 	if (actual_threshold > 0) {
-		imu_set_threshold(actual_threshold);
+		mpu_set_threshold(actual_threshold);
 	}
 
 }
 
-uint8_t get_threshold(void)
+uint8_t mpu_get_threshold(void)
 {
 	return actual_threshold;
 }
 
-void imu_set_threshold(uint8_t multiple)
+void mpu_set_threshold(uint8_t multiple)
 {
 	if (multiple > 0) {
 		if (!use_calibrate) {
-			imu_calibrate_gyro(GYRO_SAMPLES);
+			mpu_calibrate_gyro(GYRO_SAMPLES);
 		}
 
 		threshold_gyro.x_axis = threshold.x_axis * multiple;

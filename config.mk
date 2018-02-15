@@ -54,23 +54,24 @@ TARGET_SRAM = getting-started-sram.elf
 
 # List of C source files.
 CSRCS = \
-       common/services/clock/sam4s/sysclk.c               \
-       common/services/delay/sam/cycle_counter.c          \
-       common/services/serial/usart_serial.c              \
-       common/utils/interrupt/interrupt_sam_nvic.c        \
-       common/utils/stdio/read.c                          \
-       common/utils/stdio/write.c                          \
-       ../main.c                                          \
+       common/services/clock/sam4s/sysclk.c                 \
+       common/services/delay/sam/cycle_counter.c            \
+       common/services/serial/usart_serial.c                \
+       common/utils/interrupt/interrupt_sam_nvic.c          \
+       common/utils/stdio/read.c                            \
+       common/utils/stdio/write.c                           \
+       ../main.c                                            \
        ../config.c                                          \
-       ../imu/mpu6050.c                               \
-       ../imu/gyro.c                               \
-       sam/boards/sam4s_xplained_pro/init.c               \
-       sam/drivers/twi/twi.c                                  \
-       sam/drivers/pio/pio.c                              \
-       sam/drivers/pio/pio_handler.c                      \
-       sam/drivers/pmc/pmc.c                              \
-       sam/drivers/pmc/sleep.c                            \
-       sam/drivers/wdt/wdt.c                              \
+       ../cph/cph_millis.c                                  \
+       ../imu/mpu6050.c                                     \
+       ../imu/imu.c                                         \
+       sam/boards/sam4s_xplained_pro/init.c                 \
+       sam/drivers/twi/twi.c                                \
+       sam/drivers/pio/pio.c                                \
+       sam/drivers/pio/pio_handler.c                        \
+       sam/drivers/pmc/pmc.c                                \
+       sam/drivers/pmc/sleep.c                              \
+       sam/drivers/wdt/wdt.c                                \
        sam/drivers/uart/uart.c                              \
        sam/drivers/usart/usart.c                              \
        sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.c \
@@ -83,6 +84,7 @@ ASSRCS =
 # List of include paths.
 INC_PATH = \
        ../config                                          \
+       ../cph                                             \
        ../imu                                             \
        ../                                                \
        common/boards                                      \

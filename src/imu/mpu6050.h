@@ -3,15 +3,6 @@
 
 
 
-
-/** EEPROM Wait Time */
-#define TWI_WAIT_TIME   10
-/** TWI Bus Clock 400kHz */
-#define TWI_CLK     400000
-// #define TWI_CLK     100000L
-
-#define IMU_TWI_ID                      ID_TWI0
-#define IMU_ADDRESS                     0x68
 #define MPU6050_RA_WHO_AM_I             0x75
 #define MPU6050_WHO_AM_I_BIT            6
 #define MPU6050_WHO_AM_I_LENGTH         6
@@ -72,131 +63,77 @@
 
 #define IMU_TWI  TWI0
 
-void imu_init(void);
-void imu_probe(void);
-bool imu_begin(uint8_t scale, uint8_t range);
-uint8_t imu_who_am_i(void);
-void imu_set_clock_source(uint8_t source);
-int16_t imu_get_temperature(void);
-uint8_t imu_get_clock_source(void);
-void imu_set_full_scale_gyro_range(uint8_t range);
-void imu_set_gyro_scale(uint8_t scale);
-uint8_t imu_get_gyro_scale(void);
-void imu_set_accel_range(uint8_t range);
-uint8_t imu_get_accel_range(void);
+bool mpu_init(void);
+bool mpu_probe(void);
+bool mpu_begin(uint8_t scale, uint8_t range);
+uint8_t mpu_who_am_i(void);
+void mpu_set_clock_source(uint8_t source);
+int16_t mpu_get_temperature(void);
+uint8_t mpu_get_clock_source(void);
+void mpu_set_full_scale_gyro_range(uint8_t range);
+void mpu_set_gyro_scale(uint8_t scale);
+uint8_t mpu_get_gyro_scale(void);
+void mpu_set_accel_range(uint8_t range);
+uint8_t mpu_get_accel_range(void);
 
-void imu_set_dlpf_mode(uint8_t mode);
-uint8_t imu_get_dlpf_mode(void);
+void mpu_set_dlpf_mode(uint8_t mode);
+uint8_t mpu_get_dlpf_mode(void);
 
-void imu_set_sleep_enabled(bool state);
-bool imu_get_sleep_enabled(void);
+void mpu_set_sleep_enabled(bool state);
+bool mpu_get_sleep_enabled(void);
 
-void imu_set_int_zero_motion_enabled(bool state);
-bool imu_get_int_zero_motion_enabled(void);
+void mpu_set_int_zero_motion_enabled(bool state);
+bool mpu_get_int_zero_motion_enabled(void);
 
-void imu_set_int_motion_enabled(bool state);
-bool imu_get_int_motion_enabled(void);
+void mpu_set_int_motion_enabled(bool state);
+bool mpu_get_int_motion_enabled(void);
 
-void imu_set_int_freefall_enabled(bool state);
-bool imu_get_int_freefall_enabled(void);
+void mpu_set_int_freefall_enabled(bool state);
+bool mpu_get_int_freefall_enabled(void);
 
-void imu_set_motion_detection_threshold(uint8_t threshold);
-uint8_t imu_get_motion_detection_threshold(void);
+void mpu_set_motion_detection_threshold(uint8_t threshold);
+uint8_t mpu_get_motion_detection_threshold(void);
 
-void imu_set_motion_detection_duration(uint8_t duration);
-uint8_t imu_get_motion_detection_duration(void);
+void mpu_set_motion_detection_duration(uint8_t duration);
+uint8_t mpu_get_motion_detection_duration(void);
 
-void imu_set_zero_motion_detection_threshold(uint8_t threshold);
-uint8_t imu_get_zero_motion_detection_threshold(void);
+void mpu_set_zero_motion_detection_threshold(uint8_t threshold);
+uint8_t mpu_get_zero_motion_detection_threshold(void);
 
-void imu_set_zero_motion_detection_duration(uint8_t duration);
-uint8_t imu_get_zero_motion_detection_duration(void);
+void mpu_set_zero_motion_detection_duration(uint8_t duration);
+uint8_t mpu_get_zero_motion_detection_duration(void);
 
-void imu_set_freefall_detection_threshold(uint8_t threshold);
-uint8_t imu_get_freefall_detection_threshold(void);
+void mpu_set_freefall_detection_threshold(uint8_t threshold);
+uint8_t mpu_get_freefall_detection_threshold(void);
 
-void imu_set_freefall_detection_duration(uint8_t duration);
-uint8_t imu_get_freefall_detection_duration(void);
+void mpu_set_freefall_detection_duration(uint8_t duration);
+uint8_t mpu_get_freefall_detection_duration(void);
 
-void imu_set_i2c_master_mode_enabled(bool state);
-bool imu_get_i2c_master_mode_enabled(void);
+void mpu_set_i2c_master_mode_enabled(bool state);
+bool mpu_get_i2c_master_mode_enabled(void);
 
-void imu_set_i2c_bypass_enabled(bool state);
-bool imu_get_i2c_bypass_enabled(void);
+void mpu_set_i2c_bypass_enabled(bool state);
+bool mpu_get_i2c_bypass_enabled(void);
 
-void imu_set_accel_power_on_delay(uint8_t delay);
-uint8_t imu_get_accel_power_on_delay(void);
+void mpu_set_accel_power_on_delay(uint8_t delay);
+uint8_t mpu_get_accel_power_on_delay(void);
 
+uint8_t mpu_get_int_status(void);
 
+void mpu_calibrate_gyro(uint8_t samples);
+void mpu_read_activities(t_bool_activity *a);
+void mpu_log_settings(void);
+void mpu_read_gyro(int16_t *x, int16_t *y, int16_t *z);
+void mpu_read_raw_gyro(void);
+t_fp_vector mpu_read_normalized_gyro(void);
 
-uint8_t imu_get_int_status(void);
+// void mpu_read_rotation(t_fp_vector *vect);
+void mpu_read_acceleration(int16_t *x, int16_t *y, int16_t *z);
+void mpu_read_raw_acceleration(void);
+void mpu_read_normalized_acceleration(void);
+t_fp_vector mpu_read_scaled_acceleration(void);
 
-
-
-
-typedef struct fp_vector
-{
-    float x_axis;
-    float y_axis;
-    float z_axis;
-} t_fp_vector;
-
-typedef struct bool_activity
-{
-    bool is_overflow;
-    bool is_freefall;
-    bool is_inactivity;
-    bool is_activity;
-    bool is_pos_activity_on_x;
-    bool is_pos_activity_on_y;
-    bool is_pos_activity_on_z;
-    bool is_neg_activity_on_x;
-    bool is_neg_activity_on_y;
-    bool is_neg_activity_on_z;
-    bool is_data_ready;
-} t_bool_activity;
-
-
-#define GYRO_SAMPLES        50
-
-
-bool use_calibrate;
-float actual_threshold;
-float dps_per_digit;
-float range_per_digit;
-
-
-// Raw vectors
-t_fp_vector raw_gyro;
-t_fp_vector raw_accel;
-
-// Normalized vectors
-t_fp_vector norm_gyro;
-t_fp_vector norm_accel;
-
-// Delta vectors
-t_fp_vector threshold_gyro;
-t_fp_vector delta_gyro;
-
-// Threshold
-t_fp_vector threshold;
-
-t_bool_activity imu_activities;
-
-void imu_calibrate_gyro(uint8_t samples);
-void imu_read_activities(t_bool_activity *a);
-void imu_log_settings(void);
-void imu_read_gyro(int16_t *x, int16_t *y, int16_t *z);
-void imu_read_raw_gyro(void);
-t_fp_vector imu_read_normalized_gyro(void);
-
-// void imu_read_rotation(t_fp_vector *vect);
-void imu_read_acceleration(int16_t *x, int16_t *y, int16_t *z);
-void imu_read_raw_acceleration(void);
-void imu_read_normalized_acceleration(void);
-t_fp_vector imu_read_scaled_acceleration(void);
-
-void imu_set_threshold(uint8_t multiple);
-uint8_t get_threshold(void);
+void mpu_set_threshold(uint8_t multiple);
+uint8_t mpu_get_threshold(void);
 
 #endif

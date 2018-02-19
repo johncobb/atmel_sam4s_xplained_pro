@@ -87,6 +87,7 @@ void board_init(void)
 	gpio_configure_group(PINS_UART1_PIO, PINS_UART1, PINS_UART1_FLAGS);
 #endif
 
+
 #ifdef CONF_BOARD_TWI0
 	gpio_configure_pin(TWI0_DATA_GPIO, TWI0_DATA_FLAGS);
 	gpio_configure_pin(TWI0_CLK_GPIO, TWI0_CLK_FLAGS);

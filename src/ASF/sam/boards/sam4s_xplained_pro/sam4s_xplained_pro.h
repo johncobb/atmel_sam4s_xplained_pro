@@ -95,6 +95,7 @@
 //! Name string macro
 #define BOARD_NAME                "SAM4S_XPLAINED_PRO"
 
+
 //! \name Resonator definitions
 //@{
 #define BOARD_FREQ_SLCK_XTAL      (32768U)

@@ -2,7 +2,6 @@
 #define IMU_H_
 
 #include <asf.h>
-// #include "mpu6050.h"
 
 #define IMU_TWI_ID                      ID_TWI0
 #define IMU_ADDRESS                     0x68
@@ -64,6 +63,8 @@ t_fp_vector delta_gyro;
 // Threshold
 t_fp_vector threshold;
 t_bool_activity mpu_activities;
+
+extern t_fp_vector imu_complementary;
 
 bool imu_init(void);
 void imu_calibrate(void);

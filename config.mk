@@ -65,6 +65,7 @@ CSRCS = \
        ../cph/cph_millis.c                                  \
        ../imu/mpu6050.c                                     \
        ../imu/imu.c                                         \
+       ../servo/servo.c                                     \
        sam/boards/sam4s_xplained_pro/init.c                 \
        sam/drivers/twi/twi.c                                \
        sam/drivers/pio/pio.c                                \
@@ -73,7 +74,8 @@ CSRCS = \
        sam/drivers/pmc/sleep.c                              \
        sam/drivers/wdt/wdt.c                                \
        sam/drivers/uart/uart.c                              \
-       sam/drivers/usart/usart.c                              \
+       sam/drivers/usart/usart.c                            \
+       sam/drivers/pwm/pwm.c                                \
        sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.c \
        sam/utils/cmsis/sam4s/source/templates/system_sam4s.c \
        sam/utils/syscalls/gcc/syscalls.c
@@ -86,6 +88,7 @@ INC_PATH = \
        ../config                                          \
        ../cph                                             \
        ../imu                                             \
+       ../servo                                           \
        ../                                                \
        common/boards                                      \
        common/services/clock                              \
@@ -106,6 +109,7 @@ INC_PATH = \
        sam/drivers/wdt                                    \
        sam/drivers/uart                                   \
        sam/drivers/usart                                  \
+       sam/drivers/pwm                                    \
        sam/utils                                          \
        sam/utils/cmsis/sam4s/include                      \
        sam/utils/cmsis/sam4s/source/templates             \

@@ -28,10 +28,12 @@ t_fp_vector delta_gyro;
 t_fp_vector threshold;
 t_bool_activity mpu_activities;
 
+t_fp_vector imu_complementary;
+
 
 clock_time_t last_time_read = 0;
 clock_time_t f_timeout = 0;
-clock_time_t f_log_timeout = 0;
+
 
 const float alpha = 0.96f;
 float last_angle_x = 0.0f;
@@ -94,8 +96,9 @@ void imu_update(void)
     last_angle_y = angle_y;
     last_angle_z = angle_z;
 
-    if (cph_get_millis() >= f_log_timeout) {
-        f_log_timeout = cph_get_millis() + 50;
-        printf("roll/pitch/yaw: %f %f %f\r\n", angle_x, angle_y, angle_z);
-    }
+    imu_complementary.x_axis = angle_x;
+    imu_complementary.y_axis = angle_y;
+    imu_complementary.z_axis = angle_z;
+
+
 }

@@ -53,5 +53,10 @@
 #define BOARD_NO_PUSHBUTTON_2
 
 #define CONF_BOARD_TWI0
+#define CONF_BOARD_PWM
+
+#define CONF_BOARD_PWM_LED0
+#define CONF_BOARD_PWM_LED1
+
 
 #endif /* CONF_BOARD_H_INCLUDED */

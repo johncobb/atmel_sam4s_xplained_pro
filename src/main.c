@@ -5,6 +5,10 @@
 #include "config.h"
 #include "cph_millis.h"
 #include "imu.h"
+#include "servo.h"
+
+clock_time_t f_servo_timeout = 0;
+clock_time_t f_log_timeout = 0;
 
 static void configure_console(void)
 {
@@ -20,19 +24,27 @@ static void configure_console(void)
 	};
 
 	/* Configure console UART. */
-	sysclk_enable_peripheral_clock(CONSOLE_UART_ID);
+    sysclk_enable_peripheral_clock(CONSOLE_UART_ID);
 	stdio_serial_init(CONF_UART, &uart_serial_options);
 }
+
 
 
 int main(void)
 {
     sysclk_init();
     board_init();
+
+   
+
     delay_init();
     pmc_enable_periph_clk(IMU_TWI_ID);
+    pmc_enable_periph_clk(ID_PWM);
     cph_millis_init();
     configure_console();
+
+    servo_init();
+    
     puts("\r\n\r\nsam4d32c imu demo...\r\n");
 
     for (int i=0; i<5; i++) {
@@ -43,19 +55,29 @@ int main(void)
 
     
     if (imu_init()) {
+
         // Calibrate the imu
         imu_calibrate();
 
         while(true) {
             imu_update();
+
+            if (cph_get_millis() >= f_servo_timeout) {
+                f_servo_timeout = cph_get_millis() + 100;
+                servo_set_angle(imu_complementary.y_axis);
+            }
+
+            if (cph_get_millis() >= f_log_timeout) {
+                f_log_timeout = cph_get_millis() + 50;
+                printf("roll/pitch/yaw: %f %f %f\r\n", imu_complementary.x_axis, imu_complementary.y_axis, imu_complementary.z_axis);
+            }
+            
         }
 
     }
 
 
     
-
-
     // while(1) {
 
     //     if(ioport_get_pin_level(BUTTON_0_PIN) == BUTTON_0_ACTIVE) {

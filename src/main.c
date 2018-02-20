@@ -6,8 +6,9 @@
 #include "cph_millis.h"
 #include "imu.h"
 #include "servo.h"
+#include "pid.h"
 
-clock_time_t f_servo_timeout = 0;
+
 clock_time_t f_log_timeout = 0;
 
 static void configure_console(void)
@@ -28,7 +29,9 @@ static void configure_console(void)
 	stdio_serial_init(CONF_UART, &uart_serial_options);
 }
 
-
+double setpoint = 0;
+double input;
+double output;
 
 int main(void)
 {
@@ -43,7 +46,8 @@ int main(void)
     cph_millis_init();
     configure_console();
 
-    servo_init();
+
+
     
     puts("\r\n\r\nsam4d32c imu demo...\r\n");
 
@@ -56,20 +60,25 @@ int main(void)
     
     if (imu_init()) {
 
+        pid_init(&ap.imu.y_axis, &ap.command.y_axis, &ap.setpoint.y_axis, 2, 5, 1);
+        pid_set_output_limits(-90, 90);
+        pid_set_mode(AUTOMATIC);
+        servo_init();
+
         // Calibrate the imu
         imu_calibrate();
 
         while(true) {
-            imu_update();
+            imu_tick();
+            pid_tick();
+            servo_tick();
 
-            if (cph_get_millis() >= f_servo_timeout) {
-                f_servo_timeout = cph_get_millis() + 100;
-                servo_set_angle(imu_complementary.y_axis);
-            }
+
 
             if (cph_get_millis() >= f_log_timeout) {
                 f_log_timeout = cph_get_millis() + 50;
-                printf("roll/pitch/yaw: %f %f %f\r\n", imu_complementary.x_axis, imu_complementary.y_axis, imu_complementary.z_axis);
+                // printf("roll/pitch/yaw: %f %f %f\r\n", imu_complementary.x_axis, imu_complementary.y_axis, imu_complementary.z_axis);
+                printf("roll/pitch/yaw: %f %f %f\r\n", ap.imu.x_axis, ap.imu.y_axis, ap.imu.z_axis);
             }
             
         }
@@ -84,6 +93,7 @@ int main(void)
     //         ioport_toggle_pin_level(LED0_GPIO);
     //         delay_ms(500); 
     //     }
+
 
     // }
 }

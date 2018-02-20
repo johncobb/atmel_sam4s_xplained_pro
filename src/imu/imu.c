@@ -29,6 +29,7 @@ t_fp_vector threshold;
 t_bool_activity mpu_activities;
 
 t_fp_vector imu_complementary;
+t_ap_vectors ap;
 
 
 clock_time_t last_time_read = 0;
@@ -46,6 +47,18 @@ float last_gyro_angle_z = 0.0f;
 
 bool imu_init(void)
 {
+    ap.imu.x_axis = 0.0f;
+    ap.imu.y_axis = 0.0f;
+    ap.imu.z_axis = 0.0f;
+
+    ap.setpoint.x_axis = 0.0f;
+    ap.setpoint.y_axis = 0.0f;
+    ap.setpoint.z_axis = 0.0f;
+
+    ap.command.x_axis = 0.0f;
+    ap.command.y_axis = 0.0f;
+    ap.command.z_axis = 0.0f;
+
     return (mpu_init() & mpu_probe() & mpu_begin(MPU6050_GYRO_FS_250, MPU6050_ACCEL_FS_2));
 }
 
@@ -56,7 +69,7 @@ void imu_calibrate(void)
     mpu_log_settings();
 }
 
-void imu_update(void)
+void imu_tick(void)
 {
     clock_time_t t_now = cph_get_millis();
 
@@ -99,6 +112,10 @@ void imu_update(void)
     imu_complementary.x_axis = angle_x;
     imu_complementary.y_axis = angle_y;
     imu_complementary.z_axis = angle_z;
+
+    ap.imu.x_axis = angle_x;
+    ap.imu.y_axis = angle_y;
+    ap.imu.z_axis = angle_z;
 
 
 }

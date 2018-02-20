@@ -1,4 +1,7 @@
+#include "imu.h"
+#include "cph_millis.h"
 #include "servo.h"
+
 
 #define ANGLE_MIN -90
 #define ANGLE_MAX 90
@@ -16,6 +19,8 @@
 
 /** PWM channel instance for Servos */
 pwm_channel_t g_pwm_channel_servo;
+
+clock_time_t f_servo_timeout = 0;
 
 long map(long x, long in_min, long in_max, long out_min, long out_max)
 {
@@ -67,6 +72,16 @@ void servo_init(void)
 
     pwm_channel_enable(PWM, EXT1_PWM_CHANNEL);
 	
+}
+
+void servo_tick(void)
+{
+	/* Stay within update range of servo */
+	if (cph_get_millis() >= f_servo_timeout) {
+		f_servo_timeout = cph_get_millis() + 50;
+		// servo_set_angle(imu_complementary.y_axis);
+		servo_set_angle(ap.imu.y_axis);
+	}
 }
 
 void servo_set_angle(float angle)

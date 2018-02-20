@@ -22,6 +22,13 @@ typedef struct fp_vector
     float z_axis;
 } t_fp_vector;
 
+typedef struct ap_vectors
+{
+    t_fp_vector imu;
+    t_fp_vector setpoint;
+    t_fp_vector command;
+} t_ap_vectors;
+
 typedef struct bool_activity
 {
     bool is_overflow;
@@ -65,10 +72,12 @@ t_fp_vector threshold;
 t_bool_activity mpu_activities;
 
 extern t_fp_vector imu_complementary;
+extern t_ap_vectors ap;
+
 
 bool imu_init(void);
 void imu_calibrate(void);
-void imu_update(void);
+void imu_tick(void);
 
 
 #endif /* IMU_H_ */

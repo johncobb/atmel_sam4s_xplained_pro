@@ -1,101 +1,43 @@
 #include "pid.h"
+#include "imu.h"
 
 
-double kp;
-double ki;
-double kd;
+clock_time_t time = 0;
+clock_time_t elapsed_time = 0;
+clock_time_t previous_time = 0;
+float pid = 0.0f;
+float error = 0.0f;
+float previous_error = 0.0f;
+float pid_p = 0.0f;
+float pid_i = 0.0f;
+float pid_d = 0.0f;
+// float kp = 3.55f;
+// float ki = 0.005f;
+// float kd = 2.05f;
+float kp = 1.0f;
+float ki = 0.0f;
+float kd = 0.0;
+float desired_angle = 0.0f;
 
-int8_t controller_direction;
-
-double *pid_input;
-double *pid_output;
-double *pid_setpoint;
-
-clock_time_t last_time = 0;
-clock_time_t sample_time = 0;
-double output_sum = 0;
-double last_input = 0;
-
-double output_min;
-double output_max;
-bool in_auto = false;
-
-
-void pid_init(double *input, double *output, double *setpoint, double kp, double ki, double kd)
-{
-    pid_input = input;
-    pid_output = output;
-    pid_setpoint = setpoint;
-    kp = kp;
-    ki = ki;
-    kd = kd;
-
-    output_sum = *pid_output;
-    last_input = *pid_input;
-    if (output_sum > output_max) output_sum = output_max;
-    else if (output_sum < output_max) output_sum = output_min;
-
-
-}
 
 void pid_tick(void)
 {
-    pid_compute();
-}
+    previous_error = time;
+    time = cph_get_millis();
+    elapsed_time = (time - previous_time)/1000;
 
-void pid_set_mode(int mode)
-{
-    bool new_auto = (mode == AUTOMATIC);
+    error = ap.imu.y_axis - desired_angle;
+    pid_p = kp*error;
 
-    if (new_auto && !in_auto) {
-        pid_init(pid_input, pid_output, pid_setpoint, kp, ki, kd);
-    }
-    in_auto = new_auto;
-}
+    // if (-3.0f < error < 3.0f) {
+    //     pid_i = pid_i +(ki*error);
+    // }
 
-void pid_set_output_limits(double min, double max)
-{
-    if (min >= max) return;
+    pid_i = pid_i +(ki*error);
 
-    output_min = min;
-    output_max = max;
+    pid_d = kd * ((error-previous_error)/elapsed_time);
 
-}
+    pid = pid_p + pid_i + pid_d;
 
-bool pid_compute(void)
-{
-    if (!in_auto) return false;
-
-    clock_time_t now = cph_get_millis();
-    clock_time_t time_change = (now - last_time);
-
-    if (time_change >= sample_time) {
-        double input = *pid_input;
-        double error = *pid_setpoint - input;
-        double d_input = (input - last_input);
-        output_sum += (ki * error);
-
-        /*Add Proportional on Measurement, if P_ON_M is specified*/
-        //if(!pOnE) outputSum-= kp * dInput;
-
-
-        if (output_sum > output_max) output_sum = output_max;
-        else if (output_sum < output_min) output_sum = output_min;
-
-        double output = 0;
-        /*Add Proportional on Error, if P_ON_E is specified*/
-        // if(pOnE) output = kp * error;
-
-        output += output_sum - kd * d_input;
-
-        if (output > output_max) output = output_max;
-        else if (output < output_min) output = output_min;
-
-        *pid_output = output;
-
-        last_input = input;
-        last_time = now;
-        return true;
-    }
-    else return false;
+    previous_error = error;
 }

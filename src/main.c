@@ -29,10 +29,6 @@ static void configure_console(void)
 	stdio_serial_init(CONF_UART, &uart_serial_options);
 }
 
-double setpoint = 0;
-double input;
-double output;
-
 int main(void)
 {
     sysclk_init();
@@ -48,7 +44,6 @@ int main(void)
 
 
 
-    
     puts("\r\n\r\nsam4d32c imu demo...\r\n");
 
     for (int i=0; i<5; i++) {
@@ -60,9 +55,6 @@ int main(void)
     
     if (imu_init()) {
 
-        pid_init(&ap.imu.y_axis, &ap.command.y_axis, &ap.setpoint.y_axis, 2, 5, 1);
-        pid_set_output_limits(-90, 90);
-        pid_set_mode(AUTOMATIC);
         servo_init();
 
         // Calibrate the imu
@@ -70,15 +62,14 @@ int main(void)
 
         while(true) {
             imu_tick();
-            pid_tick();
             servo_tick();
-
+            pid_tick();
 
 
             if (cph_get_millis() >= f_log_timeout) {
                 f_log_timeout = cph_get_millis() + 50;
                 // printf("roll/pitch/yaw: %f %f %f\r\n", imu_complementary.x_axis, imu_complementary.y_axis, imu_complementary.z_axis);
-                printf("roll/pitch/yaw: %f %f %f\r\n", ap.imu.x_axis, ap.imu.y_axis, ap.imu.z_axis);
+                printf("roll/pitch/yaw error/pid: %f %f %f %f %f\r\n", ap.imu.x_axis, ap.imu.y_axis, ap.imu.z_axis, error, pid);
             }
             
         }
@@ -97,6 +88,8 @@ int main(void)
 
     // }
 }
+
+
 
 
 // void test_twi(void)

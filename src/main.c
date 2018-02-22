@@ -4,6 +4,7 @@
 #include <string.h>
 #include "config.h"
 #include "cph_millis.h"
+#include "cph_console.h"
 #include "imu.h"
 #include "servo.h"
 #include "pid.h"
@@ -29,20 +30,37 @@ static void configure_console(void)
 	stdio_serial_init(CONF_UART, &uart_serial_options);
 }
 
+void handle_console(uint8_t cmd)
+{
+    switch(cmd) {
+        case CS_PWMMAX:
+        servo_max();
+        break;
+        case CS_PWMMID:
+        servo_mid();
+        break;
+        case CS_PWMMIN:
+        servo_min();
+        break;
+        case CS_PWMSTEPDEC:
+        servo_decrement();
+        break;
+        case CS_PWMSTEPINC:
+        servo_increment();
+        break;               
+    }
+}
+
 int main(void)
 {
     sysclk_init();
     board_init();
-
-   
 
     delay_init();
     pmc_enable_periph_clk(IMU_TWI_ID);
     pmc_enable_periph_clk(ID_PWM);
     cph_millis_init();
     configure_console();
-
-
 
     puts("\r\n\r\nsam4d32c imu demo...\r\n");
 
@@ -57,13 +75,27 @@ int main(void)
 
         servo_init();
 
+        while (true) {
+            uint8_t command = cph_console_tick();
+            handle_console(command);
+            delay_ms(100);
+        }
+        
+        
+
         // Calibrate the imu
         imu_calibrate();
+
+        
 
         while(true) {
             imu_tick();
             servo_tick();
             pid_tick();
+            uint8_t command = cph_console_tick();
+
+            handle_console(command);
+
 
 
             if (cph_get_millis() >= f_log_timeout) {

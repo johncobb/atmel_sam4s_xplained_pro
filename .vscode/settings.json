@@ -2,6 +2,7 @@
     "files.associations": {
         "stdio.h": "c",
         "cph_millis.h": "c",
-        "servo.h": "c"
+        "servo.h": "c",
+        "imu.h": "c"
     }
 }

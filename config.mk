@@ -63,6 +63,7 @@ CSRCS = \
        ../main.c                                            \
        ../config.c                                          \
        ../cph/cph_millis.c                                  \
+       ../cph/cph_console.c                                 \
        ../imu/mpu6050.c                                     \
        ../imu/imu.c                                         \
        ../servo/servo.c                                     \

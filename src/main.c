@@ -75,11 +75,11 @@ int main(void)
 
         servo_init();
 
-        while (true) {
-            uint8_t command = cph_console_tick();
-            handle_console(command);
-            delay_ms(100);
-        }
+        // while (true) {
+        //     uint8_t command = cph_console_tick();
+        //     handle_console(command);
+        //     delay_ms(100);
+        // }
         
         
 
@@ -98,11 +98,11 @@ int main(void)
 
 
 
-            if (cph_get_millis() >= f_log_timeout) {
-                f_log_timeout = cph_get_millis() + 50;
-                // printf("roll/pitch/yaw: %f %f %f\r\n", imu_complementary.x_axis, imu_complementary.y_axis, imu_complementary.z_axis);
-                printf("roll/pitch/yaw error/pid: %f %f %f %f %f\r\n", ap.imu.x_axis, ap.imu.y_axis, ap.imu.z_axis, error, pid);
-            }
+            // if (cph_get_millis() >= f_log_timeout) {
+            //     f_log_timeout = cph_get_millis() + 50;
+            //     // printf("roll/pitch/yaw: %f %f %f\r\n", imu_complementary.x_axis, imu_complementary.y_axis, imu_complementary.z_axis);
+            //     printf("roll/pitch/yaw error/pid: %f %f %f %f %f\r\n", ap.imu.x_axis, ap.imu.y_axis, ap.imu.z_axis, error, pid);
+            // }
             
         }
 

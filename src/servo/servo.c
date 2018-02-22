@@ -5,6 +5,7 @@
 
 #define ANGLE_MIN -90
 #define ANGLE_MAX 90
+#define ANGLE_MID 0
 #define PWM_CLOCKSOURCE_FREQ 1000000
 #define PWM_FREQ 50
 #define PWM_PERIOD_TICKS PWM_CLOCKSOURCE_FREQ/PWM_FREQ
@@ -15,7 +16,8 @@
 // #define PWM_MAX 2100
 
 
-#define PWM_MIN 		700
+// #define PWM_MIN 		700
+#define PWM_MIN 		1150
 #define PWM_MID 		1350
 #define PWM_MAX 		2000
 #define PWM_STEP		10
@@ -84,12 +86,15 @@ void servo_init(void)
 
 void servo_tick(void)
 {
+
+	servo_set_angle(ap.imu.y_axis);
+
 	/* Stay within update range of servo */
-	if (cph_get_millis() >= f_servo_timeout) {
-		f_servo_timeout = cph_get_millis() + 50;
-		// servo_set_angle(imu_complementary.y_axis);
-		servo_set_angle(ap.imu.y_axis);
-	}
+	// if (cph_get_millis() >= f_servo_timeout) {
+	// 	f_servo_timeout = cph_get_millis() + 50;
+	// 	// servo_set_angle(imu_complementary.y_axis);
+	// 	servo_set_angle(ap.imu.y_axis);
+	// }
 }
 
 void servo_set_angle(float angle)
@@ -97,10 +102,11 @@ void servo_set_angle(float angle)
 
 	long x = (long) angle;
 
-	long duty = map(x, ANGLE_MIN, ANGLE_MAX, PWM_MIN, PWM_MAX);
+	// long duty = map(x, ANGLE_MIN, ANGLE_MAX, PWM_MIN, PWM_MAX);
+	long duty = map(x, ANGLE_MID, ANGLE_MAX, PWM_MIN, PWM_MAX);
 
-	// printf("servo_duty: %d\r\n", duty);
 
+	printf("current_duty_cycle: %d\r\n", duty);
 	pwm_channel_update_duty(PWM, &g_pwm_channel_servo, duty);
 }
 

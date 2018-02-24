@@ -3,37 +3,17 @@
 #include "servo.h"
 
 
-#define ANGLE_MIN -90
-#define ANGLE_MAX 90
-#define ANGLE_MID 0
-#define PWM_CLOCKSOURCE_FREQ 1000000
-#define PWM_FREQ 50
-#define PWM_PERIOD_TICKS PWM_CLOCKSOURCE_FREQ/PWM_FREQ
-
-
-// #define PWM_MIN 900
-// #define PWM_MID 1500
-// #define PWM_MAX 2100
-
-
-// #define PWM_MIN 		700
-#define PWM_MIN 		1150
-#define PWM_MID 		1350
-#define PWM_MAX 		2000
-#define PWM_STEP		10
-
-
 /** PWM channel instance for Servos */
 pwm_channel_t g_pwm_channel_servo;
 uint32_t current_duty = 0;
 
 clock_time_t f_servo_timeout = 0;
 
+
 long map(long x, long in_min, long in_max, long out_min, long out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
-
 
 void servo_init(void)
 {
@@ -63,7 +43,7 @@ void servo_init(void)
 
 	pwm_init(PWM, &clock_setting);
 
-
+	
 	/* Initialize PWM channel for LED0 */
 	/* Period is left-aligned */
 	g_pwm_channel_servo.alignment = PWM_ALIGN_LEFT;
@@ -78,11 +58,13 @@ void servo_init(void)
 	g_pwm_channel_servo.ul_duty = current_duty;
 	g_pwm_channel_servo.channel = EXT1_PWM_CHANNEL;
 
+
 	pwm_channel_init(PWM, &g_pwm_channel_servo);
 
     pwm_channel_enable(PWM, EXT1_PWM_CHANNEL);
 	
 }
+
 
 void servo_tick(void)
 {
@@ -115,6 +97,7 @@ void servo_min(void)
 	current_duty = PWM_MIN;
 	printf("current_duty_cycle: %d\r\n", current_duty);
 	pwm_channel_update_duty(PWM, &g_pwm_channel_servo, current_duty);
+	
 }
 
 void servo_max(void)

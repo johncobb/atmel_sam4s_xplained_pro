@@ -90,8 +90,9 @@ int main(void)
 
         while(true) {
             imu_tick();
-            servo_tick();
+            
             pid_tick();
+            servo_tick();
             uint8_t command = cph_console_tick();
 
             handle_console(command);

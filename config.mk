@@ -67,6 +67,7 @@ CSRCS = \
        ../imu/mpu6050.c                                     \
        ../imu/imu.c                                         \
        ../servo/servo.c                                     \
+       ../motor/motor.c                                     \
        ../pid/pid.c                                         \
        sam/boards/sam4s_xplained_pro/init.c                 \
        sam/drivers/twi/twi.c                                \
@@ -91,6 +92,7 @@ INC_PATH = \
        ../cph                                             \
        ../imu                                             \
        ../servo                                           \
+       ../motor                                           \
        ../pid                                             \
        ../                                                \
        common/boards                                      \

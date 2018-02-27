@@ -7,6 +7,7 @@
 #include "cph_console.h"
 #include "imu.h"
 #include "servo.h"
+#include "motor.h"
 #include "pid.h"
 
 
@@ -34,19 +35,24 @@ void handle_console(uint8_t cmd)
 {
     switch(cmd) {
         case CS_PWMMAX:
-        servo_max();
+        //servo_max();
+        motor_max(motors[0]);
         break;
         case CS_PWMMID:
-        servo_mid();
+        //servo_mid();
+        motor_mid(motors[0]);
         break;
         case CS_PWMMIN:
-        servo_min();
+        //servo_min();
+        motor_min(motors[0]);
         break;
         case CS_PWMSTEPDEC:
-        servo_decrement();
+        //servo_decrement();
+        motor_decrement(motors[0]);
         break;
         case CS_PWMSTEPINC:
-        servo_increment();
+        //servo_increment();
+        motor_increment(motors[0]);
         break;               
     }
 }
@@ -73,13 +79,14 @@ int main(void)
     
     if (imu_init()) {
 
-        servo_init();
+        // servo_init();
+        motor_init();
 
-        // while (true) {
-        //     uint8_t command = cph_console_tick();
-        //     handle_console(command);
-        //     delay_ms(100);
-        // }
+        while (true) {
+            uint8_t command = cph_console_tick();
+            handle_console(command);
+            delay_ms(100);
+        }
         
         
 
@@ -92,18 +99,19 @@ int main(void)
             imu_tick();
             
             pid_tick();
-            servo_tick();
+            // servo_tick();
+            motor_tick();
             uint8_t command = cph_console_tick();
 
             handle_console(command);
 
 
 
-            // if (cph_get_millis() >= f_log_timeout) {
-            //     f_log_timeout = cph_get_millis() + 50;
-            //     // printf("roll/pitch/yaw: %f %f %f\r\n", imu_complementary.x_axis, imu_complementary.y_axis, imu_complementary.z_axis);
-            //     printf("roll/pitch/yaw error/pid: %f %f %f %f %f\r\n", ap.imu.x_axis, ap.imu.y_axis, ap.imu.z_axis, error, pid);
-            // }
+            if (cph_get_millis() >= f_log_timeout) {
+                f_log_timeout = cph_get_millis() + 50;
+                // printf("roll/pitch/yaw: %f %f %f\r\n", imu_complementary.x_axis, imu_complementary.y_axis, imu_complementary.z_axis);
+                printf("roll/pitch/yaw error/pid: %f %f %f %f %f\r\n", ap.imu.x_axis, ap.imu.y_axis, ap.imu.z_axis, error, pid);
+            }
             
         }
 

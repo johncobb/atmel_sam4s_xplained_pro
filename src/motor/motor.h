@@ -26,18 +26,25 @@
 
 pwm_clock_t motor_clock_setting;
 
-typedef struct t_pwm_motor
+typedef struct
 {
-    Pwm *pwm_channel;
-    pwm_channel_t pwm_motor_channel;
-    pwm_clock_t clock_setting;
-    uint32_t pwm_pin;
-    uint32_t pwm_peripheral;
-    uint32_t pwm_clock_id;
-    uint32_t duty_cycle;
-    clock_time_t timeout;
+	Pwm *p_pwm;
+	uint32_t ul_pin; // EXT1_PIN_PWM_0
+	uint32_t ul_flag; // PIO_TYPE_PIO_PERIPH_B
+	uint32_t ul_periph_clkid; // ID_PWM
+	uint32_t ul_channel; // EXT1_PWM_CHANNEL;
+	pwm_clock_t clock_setting;
+	pwm_channel_t pwm_channel;
+    
+} t_motor_config;
+
+typedef struct
+{
+    t_motor_config config;
     long angle_min;
     long angle_max;
+    clock_time_t timeout;
+    
 } t_motor;
 
 t_motor motors[NUM_MOTORS];
@@ -48,8 +55,8 @@ void motor_set_angle(float angle);
 void motor_min(t_motor motor);
 void motor_max(t_motor motor);
 void motor_mid(t_motor motor);
-void motor_increment(void);
-void motor_decrement(void);
+void motor_increment(t_motor motor);
+void motor_decrement(t_motor motor);
 void motor_set_power(t_motor motor, uint32_t power);
 
 

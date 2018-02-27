@@ -2,75 +2,99 @@
 #include "cph_millis.h"
 #include "motor.h"
 
-// pwm_channel_update_duty(motors[0].pwm_channel, &motors[0].pwm_motor_channel, motors[0].duty_cycle);
+uint32_t motor_current_duty = 0;
+void motor_config_pins(t_motor_config motor_cfg);
 
-void motor_cfg_pwm(Pwm *p_pwm, \
-                    pwm_channel_t *pwm_channel, \
-                    pwm_align_t pwm_align, \
-                    pwm_level_t pwm_level, \
-                    uint32_t prescalar, \
-                    uint32_t period, \
-                    uint32_t duty, \
-                    uint32_t channel, \
-                    uint32_t pin, \
-                    uint32_t peripheral, \
-                    uint32_t clock_id);
 
 void motor_init(void)
 {
-	motor_clock_setting.ul_clka = MOTOR_PWM_CLOCKSOURCE_FREQ;
-	motor_clock_setting.ul_clkb = 0;
-	motor_clock_setting.ul_mck = sysclk_get_cpu_hz();
+	printf("motor_init\r\n");
 
-	motor_cfg_pwm(PWM, &motors[0], PWM_ALIGN_LEFT, PWM_HIGH, PWM_CMR_CPRE_CLKA, MOTOR_PWM_PERIOD_TICKS, MOTOR_PWM_MIN, EXT1_PWM_CHANNEL, EXT1_PIN_PWM_0, PIO_TYPE_PIO_PERIPH_B, ID_PWM);
+	pwm_clock_t clock_setting = {
+        //.ul_clka = PWM_FREQUENCY * PERIOD_VALUE,
+        .ul_clka = MOTOR_PWM_CLOCKSOURCE_FREQ,
+		.ul_clkb = 0,
+		.ul_mck = sysclk_get_cpu_hz()
+	};
+
+	t_motor_config motor_cfg = {
+		.p_pwm = PWM,
+		.ul_pin = EXT1_PIN_PWM_0,
+		.ul_flag = PIO_TYPE_PIO_PERIPH_B,
+		.ul_periph_clkid = ID_PWM,
+		.ul_channel = EXT1_PWM_CHANNEL,
+		.clock_setting = clock_setting,
+		.pwm_channel.alignment = PWM_ALIGN_LEFT,
+		.pwm_channel.polarity = PWM_HIGH,
+		.pwm_channel.ul_prescaler = PWM_CMR_CPRE_CLKA,
+		.pwm_channel.ul_period = MOTOR_PWM_PERIOD_TICKS,
+		.pwm_channel.ul_duty = MOTOR_PWM_MIN,
+		.pwm_channel.channel = EXT1_PWM_CHANNEL
+	};
+
+	motor_config_pins(motor_cfg);
+
+	motors[0].config = motor_cfg;
+	motors[0].angle_min = AP_ANGLE_MIN;
+	motors[0].angle_max = AP_ANGLE_MAX;
+	motors[0].timeout = 1000;
 }
 
-void motor_cfg_pwm(Pwm *p_pwm, pwm_channel_t *pwm_channel, pwm_align_t pwm_align, pwm_level_t pwm_level, uint32_t prescalar, uint32_t period, uint32_t duty, uint32_t channel, uint32_t pin, uint32_t peripheral, uint32_t clock_id)
+void motor_config_pins(t_motor_config motor_cfg)
 {
-	/* Initialize PWM channel for LED0 */
-	/* Period is left-aligned */
-	pwm_channel->alignment = pwm_align;
-	/* Output waveform starts at a low level */
-	// g_pwm_channel_servo.polarity = PWM_LOW;
-	pwm_channel->polarity = pwm_level;
-	/* Use PWM clock A as source clock */
-	pwm_channel->ul_prescaler = prescalar;
-	/* Period value of output waveform */
-	pwm_channel->ul_period = period;
-	/* Duty cycle value of output waveform */
-	pwm_channel->ul_duty = duty;
-	pwm_channel->channel = channel;
+	pio_configure_pin(motor_cfg.ul_pin, motor_cfg.ul_flag);
 
-	pio_configure_pin(pin, peripheral);
+	pmc_enable_periph_clk(motor_cfg.ul_periph_clkid);
 
-	pmc_enable_periph_clk(clock_id);
+	pwm_channel_disable(motor_cfg.p_pwm, motor_cfg.ul_channel);
+	pwm_init(motor_cfg.p_pwm, &motor_cfg.clock_setting);
 
-	pwm_channel_disable(p_pwm, channel);
-
-	pwm_init(p_pwm, &motor_clock_setting);
-	pwm_channel_enable(p_pwm, channel);
-
+	pwm_channel_init(motor_cfg.p_pwm, &motor_cfg.pwm_channel.channel);
+	pwm_channel_enable(motor_cfg.p_pwm, motor_cfg.ul_channel);
 }
 
+void motor_tick(void)
+{
+
+}
 
 void motor_set_power(t_motor motor, uint32_t power)
 {
-    motor.duty_cycle = power;
-	printf("current_duty_cycle: %d\r\n", motor.duty_cycle);
-	pwm_channel_update_duty(motor.pwm_channel, &motor.pwm_motor_channel, motor.duty_cycle);
+	motor.config.pwm_channel.ul_duty = power;
+	printf("motor_output: %d\r\n", motor.config.pwm_channel.ul_duty);
+	pwm_channel_update_duty(motor.config.p_pwm, &motor.config.pwm_channel, motor.config.pwm_channel.ul_duty);
 }
 
 void motor_min(t_motor motor)
 {
+    motor_current_duty = MOTOR_PWM_MIN;
     motor_set_power(motor, MOTOR_PWM_MIN);
 }
 
 void motor_mid(t_motor motor)
 {
-	motor_set_power(motor, MOTOR_PWM_MID);
+    motor_current_duty = MOTOR_PWM_MID;
+	motor_set_power(motor, motor_current_duty);
 }
 
 void motor_max(t_motor motor)
 {
-    motor_set_power(motor, MOTOR_PWM_MAX);
+    motor_current_duty = MOTOR_PWM_MAX;
+    motor_set_power(motor, motor_current_duty);
+}
+
+void motor_increment(t_motor motor)
+{
+    if (motor_current_duty == MOTOR_PWM_MAX)
+        return;
+	motor_current_duty += MOTOR_PWM_STEP;
+	motor_set_power(motor, motor_current_duty);
+}
+
+void motor_decrement(t_motor motor)
+{
+    if (motor_current_duty == MOTOR_PWM_MIN)
+        return;
+	motor_current_duty -= MOTOR_PWM_STEP;
+	motor_set_power(motor, motor_current_duty);
 }

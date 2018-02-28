@@ -8,6 +8,8 @@ uint8_t cph_console_tick(void)
     uc_flag = uart_read(CONSOLE_UART, &uc_char);
     if (!uc_flag) {
         switch (uc_char) {
+            case '\r':
+            return CS_INVALID;
             case 'l':
             return CS_PWMMIN;
             case 'm':

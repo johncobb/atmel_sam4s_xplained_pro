@@ -37,22 +37,27 @@ void handle_console(uint8_t cmd)
         case CS_PWMMAX:
         //servo_max();
         motor_max(motors[0]);
+        motor_max(motors[1]);
         break;
         case CS_PWMMID:
         //servo_mid();
         motor_mid(motors[0]);
+        motor_mid(motors[1]);
         break;
         case CS_PWMMIN:
         //servo_min();
         motor_min(motors[0]);
+        motor_min(motors[1]);
         break;
         case CS_PWMSTEPDEC:
         //servo_decrement();
         motor_decrement(motors[0]);
+        motor_decrement(motors[1]);
         break;
         case CS_PWMSTEPINC:
         //servo_increment();
         motor_increment(motors[0]);
+        motor_increment(motors[1]);
         break;               
     }
 }

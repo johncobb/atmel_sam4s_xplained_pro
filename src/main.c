@@ -69,18 +69,28 @@ int main(void)
         printf("calibration complete.\r\n");
 
         while(true) {
+            if(ioport_get_pin_level(BUTTON_0_PIN) == BUTTON_0_ACTIVE) {
+                ioport_toggle_pin_level(LED0_GPIO);
+                break;
+                delay_ms(100); 
+            }
+        }
+
+        while(true) {
             cli_tick();
             imu_tick();
-            pid_tick();
+            // pid_tick();
             motor_tick();
 
-            long y = (long) ap.imu.y_axis;
+            // long y = (long) ap.imu.x_axis;
+
+            long y = (long) pid_tick();
 
             long power_left = map(y, ANGLE_MID, ANGLE_MAX, PWM_MIN, PWM_MAX);
-            motor_set_power(motors[0], power_left);
+            motor_set_power(motors[1], power_left + 200);
 
             long power_right = map(y, ANGLE_MID, ANGLE_MIN, PWM_MIN, PWM_MAX);
-            motor_set_power(motors[1], power_right);
+            motor_set_power(motors[0], power_right + 200);
 
 
             if (config.log_imu) {

@@ -61,7 +61,7 @@ CSRCS = \
        common/utils/stdio/read.c                            \
        common/utils/stdio/write.c                           \
        ../main.c                                            \
-       ../config.c                                          \
+       ../cph/cph_config.c                                  \
        ../cph/cph_millis.c                                  \
        ../cph/cph_util.c                                    \
        ../cph/cph_console.c                                 \

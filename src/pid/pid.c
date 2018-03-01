@@ -20,7 +20,7 @@ float kd = 0.0;
 float desired_angle = 0.0f;
 
 
-void pid_tick(void)
+float pid_tick(void)
 {
     previous_error = time;
     time = cph_get_millis();
@@ -40,4 +40,6 @@ void pid_tick(void)
     pid = pid_p + pid_i + pid_d;
 
     previous_error = error;
+
+    return pid;
 }

@@ -57,8 +57,6 @@ void cli_read_device(void)
 	}
 }
 
-
-
 void cli_tick()
 {
 	// read the serial port

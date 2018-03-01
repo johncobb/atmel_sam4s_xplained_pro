@@ -33,42 +33,10 @@ static void configure_console(void)
 	stdio_serial_init(CONF_UART, &uart_serial_options);
 }
 
-void handle_console(uint8_t cmd)
-{
-    switch(cmd) {
-        case CS_PWMMAX:
-        //servo_max();
-        motor_max(motors[0]);
-        motor_max(motors[1]);
-        break;
-        case CS_PWMMID:
-        //servo_mid();
-        motor_mid(motors[0]);
-        motor_mid(motors[1]);
-        break;
-        case CS_PWMMIN:
-        //servo_min();
-        motor_min(motors[0]);
-        motor_min(motors[1]);
-        break;
-        case CS_PWMSTEPDEC:
-        //servo_decrement();
-        motor_decrement(motors[0]);
-        motor_decrement(motors[1]);
-        break;
-        case CS_PWMSTEPINC:
-        //servo_increment();
-        motor_increment(motors[0]);
-        motor_increment(motors[1]);
-        break;               
-    }
-}
-
 int main(void)
 {
     sysclk_init();
     board_init();
-
     delay_init();
     pmc_enable_periph_clk(IMU_TWI_ID);
     pmc_enable_periph_clk(ID_PWM);
@@ -79,24 +47,21 @@ int main(void)
 
     puts("\r\n\r\nsam4d32c imu demo...\r\n");
 
-    for (int i=0; i<5; i++) {
+    for (int i=0; i<10; i++) {
         printf(".");
-        delay_ms(250);
+        delay_ms(100);
     }
     printf("\r\n");
 
     
     if (imu_init()) {
 
-        // servo_init();
         motor_init();
 
         // while (true) {
         //     cli_tick();
         //     delay_ms(100);
         // }
-        
-        
 
         // Calibrate the imu
         printf("calibrating imu...\r\n");
@@ -109,12 +74,8 @@ int main(void)
             pid_tick();
             motor_tick();
 
-            
-
-
             long y = (long) ap.imu.y_axis;
 
-            // long duty = map(x, ANGLE_MIN, ANGLE_MAX, PWM_MIN, PWM_MAX);
             long power_left = map(y, ANGLE_MID, ANGLE_MAX, PWM_MIN, PWM_MAX);
             motor_set_power(motors[0], power_left);
 

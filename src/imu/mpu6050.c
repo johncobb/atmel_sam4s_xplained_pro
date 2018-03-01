@@ -61,9 +61,9 @@ void write_register8(uint8_t reg, uint8_t value)
 
     // printf("write_register status: %d\r\n", status);
     
-    if (status == TWI_SUCCESS) {
-        puts("write_register: success\r\n");
-    }
+    // if (status == TWI_SUCCESS) {
+    //     puts("write_register: success\r\n");
+    // }
 
     delay_ms(TWI_WAIT_TIME);
 }
@@ -85,9 +85,9 @@ void write_register16(uint8_t reg, int16_t value)
 
     // printf("write_register status: %d\r\n", status);
     
-    if (status == TWI_SUCCESS) {
-        puts("write_register: success\r\n");
-    }
+    // if (status == TWI_SUCCESS) {
+    //     puts("write_register: success\r\n");
+    // }
 
     delay_ms(TWI_WAIT_TIME);
 }

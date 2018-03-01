@@ -31,5 +31,7 @@ void config_init(void)
 	// config.max_pwm_fpv_pitch = 80;
 	// config.max_pwm_fpv_roll = 80;
     config.gyro_calibrate = true;
-    config.accel_calibrate = false;
+	config.accel_calibrate = false;
+	config.log_motor = false;
+	config.log_imu = false;
 }

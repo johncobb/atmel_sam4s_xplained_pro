@@ -1,5 +1,6 @@
 #include "imu.h"
 #include "cph_millis.h"
+#include "cph_util.h"
 #include "servo.h"
 
 
@@ -9,11 +10,6 @@ uint32_t current_duty = 0;
 
 clock_time_t f_servo_timeout = 0;
 
-
-long map(long x, long in_min, long in_max, long out_min, long out_max)
-{
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
 
 void servo_init(void)
 {

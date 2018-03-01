@@ -14,6 +14,8 @@ typedef struct {
     int16_t accel_offset_x;
     int16_t accel_offset_y;
     int16_t accel_offset_z;
+    bool log_motor;
+    bool log_imu;
 } config_t;
 
 extern config_t config;

@@ -4,7 +4,9 @@
 #include <string.h>
 #include "config.h"
 #include "cph_millis.h"
+#include "cph_util.h"
 #include "cph_console.h"
+#include "cph_cli.h"
 #include "imu.h"
 #include "servo.h"
 #include "motor.h"
@@ -70,7 +72,9 @@ int main(void)
     delay_init();
     pmc_enable_periph_clk(IMU_TWI_ID);
     pmc_enable_periph_clk(ID_PWM);
+    config_init();
     cph_millis_init();
+    cli_init();
     configure_console();
 
     puts("\r\n\r\nsam4d32c imu demo...\r\n");
@@ -87,35 +91,42 @@ int main(void)
         // servo_init();
         motor_init();
 
-        while (true) {
-            uint8_t command = cph_console_tick();
-            handle_console(command);
-            delay_ms(100);
-        }
+        // while (true) {
+        //     cli_tick();
+        //     delay_ms(100);
+        // }
         
         
 
         // Calibrate the imu
+        printf("calibrating imu...\r\n");
         imu_calibrate();
-
-        
+        printf("calibration complete.\r\n");
 
         while(true) {
+            cli_tick();
             imu_tick();
-            
             pid_tick();
-            // servo_tick();
             motor_tick();
-            uint8_t command = cph_console_tick();
 
-            handle_console(command);
-
+            
 
 
-            if (cph_get_millis() >= f_log_timeout) {
-                f_log_timeout = cph_get_millis() + 50;
-                // printf("roll/pitch/yaw: %f %f %f\r\n", imu_complementary.x_axis, imu_complementary.y_axis, imu_complementary.z_axis);
-                printf("roll/pitch/yaw error/pid: %f %f %f %f %f\r\n", ap.imu.x_axis, ap.imu.y_axis, ap.imu.z_axis, error, pid);
+            long y = (long) ap.imu.y_axis;
+
+            // long duty = map(x, ANGLE_MIN, ANGLE_MAX, PWM_MIN, PWM_MAX);
+            long power_left = map(y, ANGLE_MID, ANGLE_MAX, PWM_MIN, PWM_MAX);
+            motor_set_power(motors[0], power_left);
+
+            long power_right = map(y, ANGLE_MID, ANGLE_MIN, PWM_MIN, PWM_MAX);
+            motor_set_power(motors[1], power_right);
+
+
+            if (config.log_imu) {
+                if (cph_get_millis() >= f_log_timeout) {
+                    f_log_timeout = cph_get_millis() + 50;
+                    printf("roll/pitch/yaw error/pid: %f %f %f %f %f\r\n", ap.imu.x_axis, ap.imu.y_axis, ap.imu.z_axis, error, pid);
+                }
             }
             
         }

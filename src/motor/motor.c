@@ -1,5 +1,6 @@
 #include "imu.h"
 #include "cph_millis.h"
+#include "config.h"
 #include "motor.h"
 
 uint32_t motor_current_duty = 0;
@@ -85,7 +86,10 @@ void motor_tick(void)
 void motor_set_power(t_motor motor, uint32_t power)
 {
 	motor.config.pwm_channel.ul_duty = power;
-	printf("motor_output: %d\r\n", motor.config.pwm_channel.ul_duty);
+	// printf("motor_output: %d\r\n", motor.config.pwm_channel.ul_duty);
+	if (config.log_motor) {
+		printf("motor_output: %d\r\n", motor.config.pwm_channel.ul_duty);
+	}
 	pwm_channel_update_duty(motor.config.p_pwm, &motor.config.pwm_channel, motor.config.pwm_channel.ul_duty);
 }
 

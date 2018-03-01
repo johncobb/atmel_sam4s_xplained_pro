@@ -4,7 +4,7 @@
 #include "motor.h"
 
 uint32_t motor_current_duty = 0;
-void motor_config_pins(t_motor_config motor_cfg);
+void motor_config_pins(motor_config_t motor_cfg);
 
 
 void motor_init(void)
@@ -18,7 +18,7 @@ void motor_init(void)
 		.ul_mck = sysclk_get_cpu_hz()
 	};
 
-	t_motor_config motor_cfg0 = {
+	motor_config_t motor_cfg0 = {
 		.p_pwm = PWM,
 		.ul_pin = EXT1_PIN_PWM_0,
 		.ul_flag = PIO_TYPE_PIO_PERIPH_B,
@@ -33,7 +33,7 @@ void motor_init(void)
 		.pwm_channel.channel = EXT1_PWM_CHANNEL
 	};
 
-		t_motor_config motor_cfg1 = {
+	motor_config_t motor_cfg1 = {
 		.p_pwm = PWM,
 		.ul_pin = EXT2_PIN_PWM_0,
 		.ul_flag = PIO_TYPE_PIO_PERIPH_B,
@@ -65,7 +65,7 @@ void motor_init(void)
 	motors[1].timeout = 1000;
 }
 
-void motor_config_pins(t_motor_config motor_cfg)
+void motor_config_pins(motor_config_t motor_cfg)
 {
 	pio_configure_pin(motor_cfg.ul_pin, motor_cfg.ul_flag);
 
@@ -83,7 +83,7 @@ void motor_tick(void)
 
 }
 
-void motor_set_power(t_motor motor, uint32_t power)
+void motor_set_power(motor_t motor, uint32_t power)
 {
 	motor.config.pwm_channel.ul_duty = power;
 	// printf("motor_output: %d\r\n", motor.config.pwm_channel.ul_duty);
@@ -93,25 +93,25 @@ void motor_set_power(t_motor motor, uint32_t power)
 	pwm_channel_update_duty(motor.config.p_pwm, &motor.config.pwm_channel, motor.config.pwm_channel.ul_duty);
 }
 
-void motor_min(t_motor motor)
+void motor_min(motor_t motor)
 {
     motor_current_duty = MOTOR_PWM_MIN;
     motor_set_power(motor, MOTOR_PWM_MIN);
 }
 
-void motor_mid(t_motor motor)
+void motor_mid(motor_t motor)
 {
     motor_current_duty = MOTOR_PWM_MID;
 	motor_set_power(motor, motor_current_duty);
 }
 
-void motor_max(t_motor motor)
+void motor_max(motor_t motor)
 {
     motor_current_duty = MOTOR_PWM_MAX;
     motor_set_power(motor, motor_current_duty);
 }
 
-void motor_increment(t_motor motor)
+void motor_increment(motor_t motor)
 {
     if (motor_current_duty == MOTOR_PWM_MAX)
         return;
@@ -119,7 +119,7 @@ void motor_increment(t_motor motor)
 	motor_set_power(motor, motor_current_duty);
 }
 
-void motor_decrement(t_motor motor)
+void motor_decrement(motor_t motor)
 {
     if (motor_current_duty == MOTOR_PWM_MIN)
         return;

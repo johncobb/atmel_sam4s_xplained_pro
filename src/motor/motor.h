@@ -36,28 +36,28 @@ typedef struct
 	pwm_clock_t clock_setting;
 	pwm_channel_t pwm_channel;
     
-} t_motor_config;
+} motor_config_t;
 
 typedef struct
 {
-    t_motor_config config;
+    motor_config_t config;
     long angle_min;
     long angle_max;
     clock_time_t timeout;
     
-} t_motor;
+} motor_t;
 
-t_motor motors[NUM_MOTORS];
+motor_t motors[NUM_MOTORS];
 
 void motor_init(void);
 void motor_tick(void);
 void motor_set_angle(float angle);
-void motor_min(t_motor motor);
-void motor_max(t_motor motor);
-void motor_mid(t_motor motor);
-void motor_increment(t_motor motor);
-void motor_decrement(t_motor motor);
-void motor_set_power(t_motor motor, uint32_t power);
+void motor_min(motor_t motor);
+void motor_max(motor_t motor);
+void motor_mid(motor_t motor);
+void motor_increment(motor_t motor);
+void motor_decrement(motor_t motor);
+void motor_set_power(motor_t motor, uint32_t power);
 
 
 

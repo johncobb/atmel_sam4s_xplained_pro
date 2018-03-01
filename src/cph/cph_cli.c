@@ -75,14 +75,11 @@ void cli_tick()
 			cmd = strtok_r(cli_lines, CLI_DELIM, &saveptr);
 			parm = strtok_r(NULL, CLI_DELIM, &saveptr);
 
-			printf("cmd=%s\r\n", cmd);
-			printf("parm=%s\r\n", parm);
-			cli_handle_command(cmd, parm);
+			// printf("cmd=%s\r\n", cmd);
+			// printf("parm=%s\r\n", parm);
 
-
-			// sanity check
-			// if(parm != NULL)
-			// 	config_set(cmd, parm);
+			if (parm != NULL)
+				cli_handle_command(cmd, parm);
 
 
 			// reset cli_lines
@@ -99,7 +96,7 @@ void cli_handle_command(char *cmd, char *parm)
 
 	if (strcmp(cmd, "log_motor") == 0) {
 		config.log_motor = atoi(parm);
-		printf("log_motor_power: %d\r\n", config.log_motor);
+		printf("log_motor: %d\r\n", config.log_motor);
 	}
 
 	if (strcmp(cmd, "log_imu") == 0) {

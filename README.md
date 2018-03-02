@@ -7,6 +7,10 @@
 
 ####
 ```
+autopilot:
+apx 0.000   # sets desired_angle_x
+apy 0.000   # sets desired_angle_y
+
 pid:
 kp 1.0      # sets kp
 ki 0.00001  # sets ki

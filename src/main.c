@@ -11,6 +11,7 @@
 #include "servo.h"
 #include "motor.h"
 #include "pid.h"
+#include "ap.h"
 
 
 clock_time_t f_log_timeout = 0;
@@ -44,6 +45,7 @@ int main(void)
     cph_millis_init();
     cli_init();
     configure_console();
+    ap_init();
 
     puts("\r\n\r\nsam4d32c imu demo...\r\n");
 

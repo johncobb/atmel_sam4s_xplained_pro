@@ -1,6 +1,7 @@
 #include "pid.h"
 #include "imu.h"
 #include "cph_config.h"
+#include "ap.h"
 
 
 clock_time_t time = 0;
@@ -64,7 +65,7 @@ float pid_tick(void)
     time = cph_get_millis();
     elapsed_time = (time - previous_time)/1000;
 
-    error = ap.imu.y_axis - desired_angle;
+    error = ap.imu.y_axis - AP.desired_angle_x;
     pid_p = kp*error;
 
     // if (-3.0f < error < 3.0f) {

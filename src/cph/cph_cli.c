@@ -4,6 +4,7 @@
 #include "cph_config.h"
 #include "cph_cli.h"
 #include "motor.h"
+#include "ap.h"
 
 
 void init_buffer();
@@ -91,6 +92,18 @@ void cli_tick()
 //printf("motor0: %d\r\n", atoi(parm));
 void cli_handle_command(char *cmd, char *parm)
 {
+
+	/*
+	 * 	Autopilot settings
+	 */
+	if (strcmp(cmd, "apx") == 0) {
+		AP.desired_angle_x = atof(parm);
+		printf("AP.desired_angle_x: %f\r\n", AP.desired_angle_x);
+	}
+	if (strcmp(cmd, "apy") == 0) {
+		AP.desired_angle_y = atof(parm);
+		printf("AP.desired_angle_y: %f\r\n", AP.desired_angle_y);
+	}	
 
 	/*
 	 * 	Pid loop configuration

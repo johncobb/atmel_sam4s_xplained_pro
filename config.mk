@@ -71,6 +71,7 @@ CSRCS = \
        ../servo/servo.c                                     \
        ../motor/motor.c                                     \
        ../pid/pid.c                                         \
+       ../ap/ap.c                                           \
        sam/boards/sam4s_xplained_pro/init.c                 \
        sam/drivers/twi/twi.c                                \
        sam/drivers/pio/pio.c                                \
@@ -96,6 +97,7 @@ INC_PATH = \
        ../servo                                           \
        ../motor                                           \
        ../pid                                             \
+       ../ap                                              \
        ../                                                \
        common/boards                                      \
        common/services/clock                              \

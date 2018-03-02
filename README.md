@@ -3,6 +3,7 @@
 ### cli commands:
 
 ####
+```
 pid:
 kp 1.0      # sets kp
 kp 0.00001  # sets ki
@@ -22,3 +23,4 @@ motor_max           # sets motor to max power
 logging:
 log_motor 1     # toggles motor log 1/0
 log_imu 1       # toggles imu log 1/0
+```

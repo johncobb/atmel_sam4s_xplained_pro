@@ -2,6 +2,11 @@
 #define MPU6050_H_
 
 
+#define MPU9150_RA_MAG_ADDRESS		    0x0C
+#define MPU9150_RA_MAG_XOUT_L		    0x03
+#define MPU9150_RA_MAG_XOUT_H		    0x04
+#define MPU9150_RA_ZA_OFFS_H            0x0A
+
 
 #define MPU6050_RA_WHO_AM_I             0x75
 #define MPU6050_WHO_AM_I_BIT            6
@@ -123,6 +128,8 @@ uint8_t mpu_get_int_status(void);
 void mpu_calibrate_gyro(uint8_t samples);
 void mpu_read_activities(t_bool_activity *a);
 void mpu_log_settings(void);
+
+
 void mpu_read_gyro(int16_t *x, int16_t *y, int16_t *z);
 void mpu_read_raw_gyro(void);
 t_fp_vector mpu_read_normalized_gyro(void);
@@ -132,6 +139,8 @@ void mpu_read_acceleration(int16_t *x, int16_t *y, int16_t *z);
 void mpu_read_raw_acceleration(void);
 void mpu_read_normalized_acceleration(void);
 t_fp_vector mpu_read_scaled_acceleration(void);
+
+void mpu_read_magnetometer(int16_t *x, int16_t *y, int16_t *z);
 
 void mpu_set_threshold(uint8_t multiple);
 uint8_t mpu_get_threshold(void);

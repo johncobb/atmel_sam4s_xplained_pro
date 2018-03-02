@@ -2,13 +2,19 @@
 #define CPH_CONFIG_H_
 
 #include <asf.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include "cph_millis.h"
 
 
 typedef struct {
+    float pid_kp;
+    float pid_ki;
+    float pid_kd;
+    clock_time_t pid_elapsed;
+    long motor_offset;
+    bool motor_armed;
     bool gyro_calibrate;
     bool accel_calibrate;
+    bool imu_calibrate;
     int16_t gyro_offset_x;
     int16_t gyro_offset_y;
     int16_t gyro_offset_z;

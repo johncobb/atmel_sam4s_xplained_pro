@@ -1,5 +1,5 @@
 #include "imu.h"
-#include "config.h"
+#include "cph_config.h"
 #include "cph_millis.h"
 #include "mpu6050.h"
 
@@ -64,9 +64,11 @@ bool imu_init(void)
 
 void imu_calibrate(void)
 {
+    printf("calibrating imu...\r\n");
     mpu_calibrate_gyro(GYRO_SAMPLES);
     mpu_set_threshold(0);
     mpu_log_settings();
+    printf("calibration complete.\r\n");
 }
 
 void imu_tick(void)

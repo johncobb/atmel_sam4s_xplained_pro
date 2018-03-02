@@ -1,6 +1,6 @@
 #include "imu.h"
 #include "cph_millis.h"
-#include "config.h"
+#include "cph_config.h"
 #include "motor.h"
 
 uint32_t motor_current_duty = 0;

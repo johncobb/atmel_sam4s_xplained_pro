@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "config.h"
+#include "cph_config.h"
 #include "cph_cli.h"
 #include "motor.h"
 
@@ -92,15 +92,45 @@ void cli_tick()
 void cli_handle_command(char *cmd, char *parm)
 {
 
-	if (strcmp(cmd, "log_motor") == 0) {
-		config.log_motor = atoi(parm);
-		printf("log_motor: %d\r\n", config.log_motor);
+	/*
+	 * 	Pid loop configuration
+	 */
+	if (strcmp(cmd, "kp") == 0) {
+		config.pid_kp = atof(parm);
+		printf("config.pid_kp: %f\r\n", config.pid_kp);
 	}
 
-	if (strcmp(cmd, "log_imu") == 0) {
-		config.log_imu = atoi(parm);
-		printf("log_imu: %d\r\n", config.log_imu);
-	}	
+	if (strcmp(cmd, "ki") == 0) {
+		config.pid_ki = atof(parm);
+		printf("config.pid_ki: %f\r\n", config.pid_ki);
+	}
+
+	if (strcmp(cmd, "kd") == 0) {
+		config.pid_kd = atof(parm);
+		printf("config.pid_kd: %f\r\n", config.pid_kd);
+	}
+
+	/*
+	 * 	IMU settings
+	 */	
+
+	if (strcmp(cmd, "imu_calibrate") == 0) {
+		config.imu_calibrate = atoi(parm);
+		printf("imu_calibrate: %d\r\n", config.imu_calibrate);
+	}
+
+	/*
+	 * 	Motor settings
+	 */	
+	if (strcmp(cmd, "motor_armed") == 0) {
+		config.motor_armed = atoi(parm);
+		printf("motor_armed: %d\r\n", config.motor_armed);
+	}
+
+	if (strcmp(cmd, "motor_offset") == 0) {
+		config.motor_offset = atoi(parm);
+		printf("motor_offset: %d\r\n", config.motor_offset);
+	}
 
 	if (strcmp(cmd, "motor_min") == 0) {
 		printf("motor min command issued\r\n");
@@ -119,6 +149,19 @@ void cli_handle_command(char *cmd, char *parm)
 		motor_max(motors[0]);
 		motor_max(motors[1]);
 	} 
+
+	/*
+	 * 	Log settings
+	 */	
+	if (strcmp(cmd, "log_imu") == 0) {
+		config.log_imu = atoi(parm);
+		printf("log_imu: %d\r\n", config.log_imu);
+	}
+
+	if (strcmp(cmd, "log_motor") == 0) {
+		config.log_motor = atoi(parm);
+		printf("log_motor: %d\r\n", config.log_motor);
+	}	
 }
 
 // check to see if we have a new line

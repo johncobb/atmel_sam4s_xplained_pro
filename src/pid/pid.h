@@ -7,6 +7,7 @@
 float pid;
 float error;
 
+void pid_init(void);
 float pid_tick(void);
 
 

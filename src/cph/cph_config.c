@@ -4,6 +4,12 @@ config_t config;
 
 void config_init(void)
 {
+	float pid_kp = 1.0f;
+    float pid_ki = 0.0f;
+    float pid_kd = 0.0f;
+    clock_time_t pid_elapsed = 0;
+	long motor_offset = 200;
+	bool motor_armed = false;
 	// config.gyro_pitch_kp = 20000;
 	// config.gyro_pitch_ki = 10000;
 	// config.gyro_pitch_kd = 40000;
@@ -32,6 +38,7 @@ void config_init(void)
 	// config.max_pwm_fpv_roll = 80;
     config.gyro_calibrate = true;
 	config.accel_calibrate = false;
+	config.imu_calibrate = true;
 	config.log_motor = false;
 	config.log_imu = false;
 }

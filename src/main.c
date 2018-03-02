@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "config.h"
+#include "cph_config.h"
 #include "cph_millis.h"
 #include "cph_util.h"
 #include "cph_console.h"
@@ -64,33 +64,45 @@ int main(void)
         // }
 
         // Calibrate the imu
-        printf("calibrating imu...\r\n");
         imu_calibrate();
-        printf("calibration complete.\r\n");
+        config.imu_calibrate = false;
+ 
+        
 
+        printf("please press button to arm motors\r\n");
         while(true) {
             if(ioport_get_pin_level(BUTTON_0_PIN) == BUTTON_0_ACTIVE) {
                 ioport_toggle_pin_level(LED0_GPIO);
+                config.motor_armed = true;
+                printf("motor_armed: %d\r\n", config.motor_armed);
                 break;
                 delay_ms(100); 
             }
         }
 
         while(true) {
+
+
+            if (config.imu_calibrate) {
+                imu_calibrate();
+                pid_init();
+                config.imu_calibrate = false;
+            }
             cli_tick();
             imu_tick();
-            // pid_tick();
             motor_tick();
 
             // long y = (long) ap.imu.x_axis;
 
-            long y = (long) pid_tick();
+            long x = (long) pid_tick();
 
-            long power_left = map(y, ANGLE_MID, ANGLE_MAX, PWM_MIN, PWM_MAX);
-            motor_set_power(motors[1], power_left + 200);
+            long power_left = map(x, ANGLE_MID, ANGLE_MAX, PWM_MIN, PWM_MAX);
+            long power_right = map(x, ANGLE_MID, ANGLE_MIN, PWM_MIN, PWM_MAX);
 
-            long power_right = map(y, ANGLE_MID, ANGLE_MIN, PWM_MIN, PWM_MAX);
-            motor_set_power(motors[0], power_right + 200);
+            if (config.motor_armed) {
+                motor_set_power(motors[1], power_left + config.motor_offset);
+                motor_set_power(motors[0], power_right + config.motor_offset);
+            }
 
 
             if (config.log_imu) {

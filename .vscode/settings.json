@@ -3,6 +3,7 @@
         "stdio.h": "c",
         "cph_millis.h": "c",
         "servo.h": "c",
-        "imu.h": "c"
+        "imu.h": "c",
+        "cph_config.h": "c"
     }
 }

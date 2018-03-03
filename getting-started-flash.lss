@@ -7,37 +7,37 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   1 .relocate     000001e8  20000000  00408514  00020000  2**2
                   CONTENTS, ALLOC, LOAD, CODE
-  2 .bss          00000660  200001e8  004086fc  000201e8  2**2
+  2 .bss          00000680  200001e8  004086fc  000201e8  2**2
                   ALLOC
-  3 .stack        00003000  20000848  00408d5c  000201e8  2**0
+  3 .stack        00003000  20000868  00408d7c  000201e8  2**0
                   ALLOC
   4 .ARM.attributes 0000002a  00000000  00000000  000201e8  2**0
                   CONTENTS, READONLY
   5 .comment      0000006e  00000000  00000000  00020212  2**0
                   CONTENTS, READONLY
-  6 .debug_info   0001661c  00000000  00000000  00020280  2**0
+  6 .debug_info   000167a5  00000000  00000000  00020280  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00003952  00000000  00000000  0003689c  2**0
+  7 .debug_abbrev 00003952  00000000  00000000  00036a25  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_loc    00005dfa  00000000  00000000  0003a1ee  2**0
+  8 .debug_loc    00005dfa  00000000  00000000  0003a377  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_aranges 00000ec8  00000000  00000000  0003ffe8  2**0
+  9 .debug_aranges 00000ed0  00000000  00000000  00040171  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_ranges 00000d28  00000000  00000000  00040eb0  2**0
+ 10 .debug_ranges 00000d30  00000000  00000000  00041041  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_macro  000189c1  00000000  00000000  00041bd8  2**0
+ 11 .debug_macro  000189c1  00000000  00000000  00041d71  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_line   00014a4d  00000000  00000000  0005a599  2**0
+ 12 .debug_line   00014a66  00000000  00000000  0005a732  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_str    000558a3  00000000  00000000  0006efe6  2**0
+ 13 .debug_str    000558b4  00000000  00000000  0006f198  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_frame  0000332c  00000000  00000000  000c488c  2**2
+ 14 .debug_frame  0000334c  00000000  00000000  000c4a4c  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
 
 00400000 <_sfixed>:
-  400000:	20003848 	.word	0x20003848
+  400000:	20003868 	.word	0x20003868
   400004:	00402341 	.word	0x00402341
   400008:	0040233d 	.word	0x0040233d
   40000c:	0040233d 	.word	0x0040233d
@@ -924,17 +924,17 @@ __always_inline static void arch_ioport_toggle_pin_level(ioport_pin_t pin)
   4004fc:	00407d90 	.word	0x00407d90
   400500:	000d1437 	.word	0x000d1437
   400504:	00407d8c 	.word	0x00407d8c
-  400508:	200006d0 	.word	0x200006d0
+  400508:	200006e4 	.word	0x200006e4
   40050c:	00407d94 	.word	0x00407d94
   400510:	400e0e00 	.word	0x400e0e00
   400514:	400e1200 	.word	0x400e1200
   400518:	00407db8 	.word	0x00407db8
   40051c:	20000204 	.word	0x20000204
-  400520:	20000800 	.word	0x20000800
+  400520:	20000814 	.word	0x20000814
   400524:	2000044c 	.word	0x2000044c
   400528:	20000458 	.word	0x20000458
   40052c:	00407dcc 	.word	0x00407dcc
-  400530:	20000530 	.word	0x20000530
+  400530:	20000534 	.word	0x20000534
   400534:	20000208 	.word	0x20000208
 
 00400538 <config_init>:
@@ -958,7 +958,7 @@ __always_inline static void arch_ioport_toggle_pin_level(ioport_pin_t pin)
   400548:	f883 2025 	strb.w	r2, [r3, #37]	; 0x25
   40054c:	4770      	bx	lr
   40054e:	bf00      	nop
-  400550:	200006d0 	.word	0x200006d0
+  400550:	200006e4 	.word	0x200006e4
 
 00400554 <map>:
 #include "cph_util.h"
@@ -1046,7 +1046,7 @@ void init_buffer()
   4005b0:	bd08      	pop	{r3, pc}
   4005b2:	bf00      	nop
   4005b4:	20000414 	.word	0x20000414
-  4005b8:	200006f8 	.word	0x200006f8
+  4005b8:	2000070c 	.word	0x2000070c
 
 004005bc <init_lines>:
 }
@@ -1061,7 +1061,7 @@ void init_lines()
   4005c4:	f002 fbdb 	bl	402d7e <memset>
   4005c8:	bd08      	pop	{r3, pc}
   4005ca:	bf00      	nop
-  4005cc:	2000077c 	.word	0x2000077c
+  4005cc:	20000790 	.word	0x20000790
 
 004005d0 <cli_init>:
 char cli_line_buffer[CLI_MAX_CHARS+1];
@@ -1370,12 +1370,12 @@ void cli_handle_command(char *cmd, char *parm)
   4007fc:	bdf0      	pop	{r4, r5, r6, r7, pc}
   4007fe:	bf00      	nop
   400800:	00407df8 	.word	0x00407df8
-  400804:	20000830 	.word	0x20000830
+  400804:	20000850 	.word	0x20000850
   400808:	00407dfc 	.word	0x00407dfc
   40080c:	00407e18 	.word	0x00407e18
   400810:	00407e1c 	.word	0x00407e1c
   400814:	00407e38 	.word	0x00407e38
-  400818:	200006d0 	.word	0x200006d0
+  400818:	200006e4 	.word	0x200006e4
   40081c:	00407e3c 	.word	0x00407e3c
   400820:	00407e50 	.word	0x00407e50
   400824:	00407e54 	.word	0x00407e54
@@ -1389,7 +1389,7 @@ void cli_handle_command(char *cmd, char *parm)
   400844:	00407ec0 	.word	0x00407ec0
   400848:	00407ed4 	.word	0x00407ed4
   40084c:	00407ee0 	.word	0x00407ee0
-  400850:	20000530 	.word	0x20000530
+  400850:	20000534 	.word	0x20000534
   400854:	00407efc 	.word	0x00407efc
   400858:	00407f08 	.word	0x00407f08
   40085c:	00407f24 	.word	0x00407f24
@@ -1583,8 +1583,8 @@ bool handle_data()
   400938:	bd08      	pop	{r3, pc}
   40093a:	bf00      	nop
   40093c:	20000414 	.word	0x20000414
-  400940:	200006f8 	.word	0x200006f8
-  400944:	2000077c 	.word	0x2000077c
+  400940:	2000070c 	.word	0x2000070c
+  400944:	20000790 	.word	0x20000790
 
 00400948 <cli_tick>:
 		}
@@ -1646,7 +1646,7 @@ void cli_tick()
   400984:	bd30      	pop	{r4, r5, pc}
   400986:	bf00      	nop
   400988:	00407f80 	.word	0x00407f80
-  40098c:	2000077c 	.word	0x2000077c
+  40098c:	20000790 	.word	0x20000790
 
 00400990 <write_register8>:
 int16_t read_register16(uint8_t address, uint8_t reg);
@@ -2275,9 +2275,9 @@ bool mpu_begin(uint8_t scale, uint8_t range)
 }
   400c88:	bd38      	pop	{r3, r4, r5, pc}
   400c8a:	bf00      	nop
-  400c8c:	200006b4 	.word	0x200006b4
+  400c8c:	200006c4 	.word	0x200006c4
   400c90:	2000043c 	.word	0x2000043c
-  400c94:	20000680 	.word	0x20000680
+  400c94:	20000684 	.word	0x20000684
   400c98:	20000444 	.word	0x20000444
 
 00400c9c <mpu_get_sleep_enabled>:
@@ -2369,9 +2369,9 @@ void mpu_read_raw_gyro(void)
   400d24:	f006 fdc6 	bl	4078b4 <__aeabi_i2f>
   400d28:	60a0      	str	r0, [r4, #8]
   400d2a:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
-  400d2c:	200006a4 	.word	0x200006a4
+  400d2c:	200006b4 	.word	0x200006b4
   400d30:	2000051c 	.word	0x2000051c
-  400d34:	200006c0 	.word	0x200006c0
+  400d34:	200006d0 	.word	0x200006d0
   400d38:	20000510 	.word	0x20000510
 
 00400d3c <mpu_read_normalized_gyro>:
@@ -2502,11 +2502,11 @@ t_fp_vector mpu_read_normalized_gyro(void)
   400e3a:	bf00      	nop
   400e3c:	2000043c 	.word	0x2000043c
   400e40:	20000438 	.word	0x20000438
-  400e44:	200006c4 	.word	0x200006c4
+  400e44:	200006d8 	.word	0x200006d8
   400e48:	20000510 	.word	0x20000510
   400e4c:	20000444 	.word	0x20000444
-  400e50:	20000680 	.word	0x20000680
-  400e54:	200006b4 	.word	0x200006b4
+  400e50:	20000684 	.word	0x20000684
+  400e54:	200006c4 	.word	0x200006c4
 
 00400e58 <mpu_read_acceleration>:
 
@@ -2579,9 +2579,9 @@ void mpu_read_raw_acceleration(void)
   400ed4:	60a0      	str	r0, [r4, #8]
   400ed6:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
   400ed8:	2000051e 	.word	0x2000051e
-  400edc:	200006c2 	.word	0x200006c2
-  400ee0:	2000052c 	.word	0x2000052c
-  400ee4:	200006a8 	.word	0x200006a8
+  400edc:	200006d2 	.word	0x200006d2
+  400ee0:	20000530 	.word	0x20000530
+  400ee4:	200006b8 	.word	0x200006b8
 
 00400ee8 <mpu_read_normalized_acceleration>:
 }
@@ -2619,8 +2619,8 @@ void mpu_read_normalized_acceleration(void)
   400f24:	60a0      	str	r0, [r4, #8]
   400f26:	bd70      	pop	{r4, r5, r6, pc}
   400f28:	20000428 	.word	0x20000428
-  400f2c:	20000698 	.word	0x20000698
-  400f30:	200006a8 	.word	0x200006a8
+  400f2c:	200006a8 	.word	0x200006a8
+  400f30:	200006b8 	.word	0x200006b8
   400f34:	411ce80a 	.word	0x411ce80a
 
 00400f38 <mpu_log_settings>:
@@ -2809,7 +2809,7 @@ void mpu_set_threshold(uint8_t multiple)
   401090:	6018      	str	r0, [r3, #0]
   401092:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
   401094:	2000043c 	.word	0x2000043c
-  401098:	20000680 	.word	0x20000680
+  401098:	20000684 	.word	0x20000684
   40109c:	20000504 	.word	0x20000504
   4010a0:	20000444 	.word	0x20000444
 
@@ -3051,7 +3051,7 @@ void mpu_calibrate_gyro(uint8_t samples)
   401222:	b005      	add	sp, #20
   401224:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
   401228:	2000043c 	.word	0x2000043c
-  40122c:	200006b4 	.word	0x200006b4
+  40122c:	200006c4 	.word	0x200006c4
   401230:	42480000 	.word	0x42480000
   401234:	20000504 	.word	0x20000504
   401238:	20000444 	.word	0x20000444
@@ -3101,7 +3101,7 @@ bool imu_init(void)
   40126e:	4020      	ands	r0, r4
   401270:	bd10      	pop	{r4, pc}
   401272:	bf00      	nop
-  401274:	20000800 	.word	0x20000800
+  401274:	20000814 	.word	0x20000814
 
 00401278 <imu_calibrate>:
 
@@ -3177,6 +3177,8 @@ void imu_tick(void)
   401306:	f005 fffd 	bl	407304 <__aeabi_ddiv>
   40130a:	f006 f9c9 	bl	4076a0 <__aeabi_d2f>
   40130e:	9007      	str	r0, [sp, #28]
+    // float mag_y = ((float) raw_mag.y_axis)*M_PI/180.0f;
+    // float mag_z = ((float) raw_mag.z_axis)*M_PI/180.0f;
 
 
 
@@ -3398,17 +3400,17 @@ void imu_tick(void)
   4014a8:	54442d18 	.word	0x54442d18
   4014ac:	400921fb 	.word	0x400921fb
   4014b0:	20000208 	.word	0x20000208
-  4014b4:	200006c4 	.word	0x200006c4
+  4014b4:	200006d8 	.word	0x200006d8
   4014b8:	40668000 	.word	0x40668000
-  4014bc:	20000698 	.word	0x20000698
+  4014bc:	200006a8 	.word	0x200006a8
   4014c0:	447a0000 	.word	0x447a0000
   4014c4:	20000430 	.word	0x20000430
   4014c8:	3f75c28f 	.word	0x3f75c28f
   4014cc:	3d23d710 	.word	0x3d23d710
   4014d0:	20000434 	.word	0x20000434
   4014d4:	20000440 	.word	0x20000440
-  4014d8:	20000824 	.word	0x20000824
-  4014dc:	20000800 	.word	0x20000800
+  4014d8:	20000844 	.word	0x20000844
+  4014dc:	20000814 	.word	0x20000814
   4014e0:	2000042c 	.word	0x2000042c
 
 004014e4 <motor_config_pins>:
@@ -3626,7 +3628,7 @@ void motor_init(void)
   4016a4:	40020000 	.word	0x40020000
   4016a8:	000f4240 	.word	0x000f4240
   4016ac:	07270e00 	.word	0x07270e00
-  4016b0:	20000530 	.word	0x20000530
+  4016b0:	20000534 	.word	0x20000534
 
 004016b4 <motor_tick>:
 	pwm_channel_init(motor_cfg.p_pwm, &motor_cfg.pwm_channel.channel);
@@ -3669,7 +3671,7 @@ void motor_set_power(motor_t motor, uint32_t power)
   4016e0:	e8bd 4008 	ldmia.w	sp!, {r3, lr}
   4016e4:	b004      	add	sp, #16
   4016e6:	4770      	bx	lr
-  4016e8:	200006d0 	.word	0x200006d0
+  4016e8:	200006e4 	.word	0x200006e4
   4016ec:	00408148 	.word	0x00408148
 
 004016f0 <motor_min>:
@@ -3903,8 +3905,8 @@ float pid_tick(void)
   401894:	2000046c 	.word	0x2000046c
   401898:	10624dd3 	.word	0x10624dd3
   40189c:	20000470 	.word	0x20000470
-  4018a0:	20000830 	.word	0x20000830
-  4018a4:	20000800 	.word	0x20000800
+  4018a0:	20000850 	.word	0x20000850
+  4018a4:	20000814 	.word	0x20000814
   4018a8:	20000458 	.word	0x20000458
   4018ac:	2000000c 	.word	0x2000000c
   4018b0:	20000474 	.word	0x20000474
@@ -3933,7 +3935,7 @@ void ap_init(void)
     AP.motor_power = 0;
   4018d8:	60da      	str	r2, [r3, #12]
   4018da:	4770      	bx	lr
-  4018dc:	20000830 	.word	0x20000830
+  4018dc:	20000850 	.word	0x20000850
 
 004018e0 <board_init>:
  * \addtogroup sam4s_xplained_pro_group
@@ -5802,7 +5804,7 @@ void pio_handler_process(Pio *p_pio, uint32_t ul_id)
   401f6a:	4798      	blx	r3
   401f6c:	e8bd 83f8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, pc}
   401f70:	2000047c 	.word	0x2000047c
-  401f74:	20000840 	.word	0x20000840
+  401f74:	20000860 	.word	0x20000860
   401f78:	20000478 	.word	0x20000478
 
 00401f7c <PIOA_Handler>:
@@ -6924,9 +6926,9 @@ __attribute__( ( always_inline ) ) __STATIC_INLINE void __NOP(void)
   4023c8:	00408514 	.word	0x00408514
   4023cc:	200001e8 	.word	0x200001e8
   4023d0:	00408510 	.word	0x00408510
-  4023d4:	20000848 	.word	0x20000848
+  4023d4:	20000868 	.word	0x20000868
   4023d8:	200001e8 	.word	0x200001e8
-  4023dc:	2000084b 	.word	0x2000084b
+  4023dc:	2000086b 	.word	0x2000086b
   4023e0:	e000ed00 	.word	0xe000ed00
   4023e4:	00400000 	.word	0x00400000
 
@@ -7266,7 +7268,7 @@ void SystemCoreClockUpdate( void )
 }
   4025b6:	4770      	bx	lr
   4025b8:	200004ec 	.word	0x200004ec
-  4025bc:	20003848 	.word	0x20003848
+  4025bc:	20003868 	.word	0x20003868
   4025c0:	20027ffc 	.word	0x20027ffc
 
 004025c4 <_close>:
@@ -14554,7 +14556,7 @@ extern int _lseek(int file, int ptr, int dir)
   406b96:	b103      	cbz	r3, 406b9a <_sbrk_r+0x1a>
   406b98:	602b      	str	r3, [r5, #0]
   406b9a:	bd38      	pop	{r3, r4, r5, pc}
-  406b9c:	20000844 	.word	0x20000844
+  406b9c:	20000864 	.word	0x20000864
 
 00406ba0 <__sread>:
   406ba0:	b510      	push	{r4, lr}
@@ -14667,7 +14669,7 @@ extern int _lseek(int file, int ptr, int dir)
   406c86:	b103      	cbz	r3, 406c8a <_write_r+0x1e>
   406c88:	602b      	str	r3, [r5, #0]
   406c8a:	bd38      	pop	{r3, r4, r5, pc}
-  406c8c:	20000844 	.word	0x20000844
+  406c8c:	20000864 	.word	0x20000864
 
 00406c90 <_close_r>:
   406c90:	b538      	push	{r3, r4, r5, lr}
@@ -14683,7 +14685,7 @@ extern int _lseek(int file, int ptr, int dir)
   406ca6:	b103      	cbz	r3, 406caa <_close_r+0x1a>
   406ca8:	602b      	str	r3, [r5, #0]
   406caa:	bd38      	pop	{r3, r4, r5, pc}
-  406cac:	20000844 	.word	0x20000844
+  406cac:	20000864 	.word	0x20000864
 
 00406cb0 <_fstat_r>:
   406cb0:	b538      	push	{r3, r4, r5, lr}
@@ -14701,7 +14703,7 @@ extern int _lseek(int file, int ptr, int dir)
   406cca:	602b      	str	r3, [r5, #0]
   406ccc:	bd38      	pop	{r3, r4, r5, pc}
   406cce:	bf00      	nop
-  406cd0:	20000844 	.word	0x20000844
+  406cd0:	20000864 	.word	0x20000864
 
 00406cd4 <_isatty_r>:
   406cd4:	b538      	push	{r3, r4, r5, lr}
@@ -14717,7 +14719,7 @@ extern int _lseek(int file, int ptr, int dir)
   406cea:	b103      	cbz	r3, 406cee <_isatty_r+0x1a>
   406cec:	602b      	str	r3, [r5, #0]
   406cee:	bd38      	pop	{r3, r4, r5, pc}
-  406cf0:	20000844 	.word	0x20000844
+  406cf0:	20000864 	.word	0x20000864
 
 00406cf4 <_lseek_r>:
   406cf4:	b538      	push	{r3, r4, r5, lr}
@@ -14735,7 +14737,7 @@ extern int _lseek(int file, int ptr, int dir)
   406d0e:	b103      	cbz	r3, 406d12 <_lseek_r+0x1e>
   406d10:	602b      	str	r3, [r5, #0]
   406d12:	bd38      	pop	{r3, r4, r5, pc}
-  406d14:	20000844 	.word	0x20000844
+  406d14:	20000864 	.word	0x20000864
 
 00406d18 <__malloc_lock>:
   406d18:	4770      	bx	lr
@@ -14759,7 +14761,7 @@ extern int _lseek(int file, int ptr, int dir)
   406d36:	b103      	cbz	r3, 406d3a <_read_r+0x1e>
   406d38:	602b      	str	r3, [r5, #0]
   406d3a:	bd38      	pop	{r3, r4, r5, pc}
-  406d3c:	20000844 	.word	0x20000844
+  406d3c:	20000864 	.word	0x20000864
 
 00406d40 <__aeabi_drsub>:
   406d40:	f081 4100 	eor.w	r1, r1, #2147483648	; 0x80000000

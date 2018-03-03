@@ -15,10 +15,12 @@ float range_per_digit = 0.0f;
 // Raw vectors
 t_fp_vector raw_gyro;
 t_fp_vector raw_accel;
+t_fp_vector raw_mag;
 
 // Normalized vectors
 t_fp_vector norm_gyro;
 t_fp_vector norm_accel;
+t_fp_vector norm_mag;
 
 // Delta vectors
 t_fp_vector threshold_gyro;
@@ -81,6 +83,13 @@ void imu_tick(void)
     float gyro_x = (norm_gyro.x_axis*M_PI)/180.0f;
     float gyro_y = (norm_gyro.y_axis*M_PI)/180.0f;
     float gyro_z = (norm_gyro.z_axis*M_PI)/180.0f;
+
+
+
+    // mpu_read_raw_mag();
+    // float mag_x = ((float) raw_mag.x_axis)*M_PI/180.0f;
+    // float mag_y = ((float) raw_mag.y_axis)*M_PI/180.0f;
+    // float mag_z = ((float) raw_mag.z_axis)*M_PI/180.0f;
 
 
 

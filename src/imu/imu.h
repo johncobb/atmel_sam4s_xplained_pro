@@ -14,6 +14,8 @@
 #define GRAVITY	15500.0f;
 #define GYRO_SAMPLES        50
 
+#define MAG_READ_RATE       100 // ms between reads
+
 
 typedef struct fp_vector
 {
@@ -22,9 +24,12 @@ typedef struct fp_vector
     float z_axis;
 } t_fp_vector;
 
+
+
 typedef struct ap_vectors
 {
     t_fp_vector imu;
+    t_fp_vector mag;
     t_fp_vector setpoint;
     t_fp_vector command;
 } t_ap_vectors;
@@ -64,6 +69,7 @@ t_fp_vector raw_mag;
 // Normalized vectors
 t_fp_vector norm_gyro;
 t_fp_vector norm_accel;
+t_fp_vector norm_mag;
 
 // Delta vectors
 t_fp_vector threshold_gyro;

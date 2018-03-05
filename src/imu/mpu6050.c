@@ -663,25 +663,6 @@ t_fp_vector mpu_read_scaled_acceleration(void)
     return norm_accel;
 }
 
-void mpu_read_raw_mag(void)
-{
-    mpu_read_mag(&mx, &my, &mz);
-
-    /*
-     * milliGauss (1229 microTesla per 2^12 bits, 10 mG per microTesla)
-     * apply calibration offsets in mG that correspond to your environment and magnetometer
-     */
-
-    mx = mx * 10/1229/4096 +18;
-    my = my * 10/1229/4096 +70;
-    mz = mz * 10/1229/4096 +270;
-
-    raw_mag.x_axis = (float) mx;
-    raw_mag.y_axis = (float) my;
-    raw_mag.z_axis = (float) mz;
-}
-
-
 void mpu_read_mag(int16_t *x, int16_t *y, int16_t *z)
 {
     // Set bypass enable
@@ -700,6 +681,29 @@ void mpu_read_mag(int16_t *x, int16_t *y, int16_t *z)
     *x = (((int16_t)i2c_buffer[0]) << 8) | i2c_buffer[1];
     *y = (((int16_t)i2c_buffer[2]) << 8) | i2c_buffer[3];
     *z = (((int16_t)i2c_buffer[4]) << 8) | i2c_buffer[5];
+}
+
+void mpu_read_raw_mag(void)
+{
+    mpu_read_mag(&mx, &my, &mz);
+    raw_mag.x_axis = (float) mx;
+    raw_mag.y_axis = (float) my;
+    raw_mag.z_axis = (float) mz;
+}
+
+void mpu_read_normalized_mag(void)
+{
+    mpu_read_raw_mag();
+
+    /*
+     * milliGauss (1229 microTesla per 2^12 bits, 10 mG per microTesla)
+     * apply calibration offsets in mG that correspond to your environment and magnetometer
+     */
+
+    norm_mag.x_axis = raw_mag.x_axis * 10/1229/4096 +18;
+    norm_mag.y_axis = raw_mag.y_axis * 10/1229/4096 +70;
+    norm_mag.z_axis = raw_mag.z_axis * 10/1229/4096 +270;    
+
 }
 
 void mpu_log_settings(void)

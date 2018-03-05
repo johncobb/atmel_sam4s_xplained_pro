@@ -140,8 +140,10 @@ void mpu_read_raw_acceleration(void);
 void mpu_read_normalized_acceleration(void);
 t_fp_vector mpu_read_scaled_acceleration(void);
 
-void mpu_read_raw_mag(void);
+
 void mpu_read_mag(int16_t *x, int16_t *y, int16_t *z);
+void mpu_read_raw_mag(void);
+void mpu_read_normalized_mag(void);
 
 void mpu_set_threshold(uint8_t multiple);
 uint8_t mpu_get_threshold(void);

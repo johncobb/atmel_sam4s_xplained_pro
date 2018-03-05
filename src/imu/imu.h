@@ -14,6 +14,8 @@
 #define GRAVITY	15500.0f;
 #define GYRO_SAMPLES        50
 
+#define MAG_READ_RATE       100 // ms between reads
+
 
 typedef struct fp_vector
 {
@@ -22,9 +24,12 @@ typedef struct fp_vector
     float z_axis;
 } t_fp_vector;
 
+
+
 typedef struct ap_vectors
 {
     t_fp_vector imu;
+    t_fp_vector mag;
     t_fp_vector setpoint;
     t_fp_vector command;
 } t_ap_vectors;
@@ -47,8 +52,9 @@ typedef struct bool_activity
 // Raw variables used to read data
 // from i2c registers from mpu
 uint8_t mpu_buffer[16];
-int16_t ax, ay, az;
-int16_t gx, gy, gz;
+int16_t ax, ay, az; // accel
+int16_t gx, gy, gz; // gyro
+int16_t mx, my, mz; // mag
 
 bool use_calibrate;
 float actual_threshold;
@@ -58,10 +64,12 @@ float range_per_digit;
 // Raw vectors
 t_fp_vector raw_gyro;
 t_fp_vector raw_accel;
+t_fp_vector raw_mag;
 
 // Normalized vectors
 t_fp_vector norm_gyro;
 t_fp_vector norm_accel;
+t_fp_vector norm_mag;
 
 // Delta vectors
 t_fp_vector threshold_gyro;

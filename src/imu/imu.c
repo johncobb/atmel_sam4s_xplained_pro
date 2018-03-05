@@ -15,10 +15,12 @@ float range_per_digit = 0.0f;
 // Raw vectors
 t_fp_vector raw_gyro;
 t_fp_vector raw_accel;
+t_fp_vector raw_mag;
 
 // Normalized vectors
 t_fp_vector norm_gyro;
 t_fp_vector norm_accel;
+t_fp_vector norm_mag;
 
 // Delta vectors
 t_fp_vector threshold_gyro;
@@ -34,6 +36,7 @@ t_ap_vectors ap;
 
 clock_time_t last_time_read = 0;
 clock_time_t f_timeout = 0;
+volatile clock_time_t f_mag_timeout = 0;
 
 
 const float alpha = 0.96f;
@@ -83,6 +86,23 @@ void imu_tick(void)
     float gyro_z = (norm_gyro.z_axis*M_PI)/180.0f;
 
 
+    float mag_x = 0.0f;
+    float mag_y = 0.0f;
+    float mag_z = 0.0f;
+
+
+    // TODO: Need to tune
+    // if (cph_get_millis() >= f_mag_timeout) {
+    //     f_mag_timeout = cph_get_millis() + MAG_READ_RATE;
+
+    //     mpu_read_normalized_mag();
+        
+    //     mag_x = ((float) norm_mag.x_axis)*M_PI/180.0f;
+    //     mag_y = ((float) norm_mag.y_axis)*M_PI/180.0f;
+    //     mag_z = ((float) norm_mag.z_axis)*M_PI/180.0f;
+    // }
+
+
 
     float accel_angle_y = atan2(norm_accel.x_axis, sqrt( pow(norm_accel.y_axis, 2) + pow(norm_accel.z_axis, 2))) * 180.0f / M_PI;
     float accel_angle_x = atan2(norm_accel.y_axis, sqrt( pow(norm_accel.x_axis, 2) + pow(norm_accel.z_axis, 2))) * 180.0f / M_PI;
@@ -118,6 +138,9 @@ void imu_tick(void)
     ap.imu.x_axis = angle_x;
     ap.imu.y_axis = angle_y;
     ap.imu.z_axis = angle_z;
+    ap.mag.x_axis = mag_x;
+    ap.mag.y_axis = mag_y;
+    ap.mag.z_axis = mag_z;
 
 
 }

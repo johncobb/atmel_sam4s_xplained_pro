@@ -110,7 +110,7 @@ int main(void)
             if (config.log_imu) {
                 if (cph_get_millis() >= f_log_timeout) {
                     f_log_timeout = cph_get_millis() + 50;
-                    printf("roll/pitch/yaw error/pid: %f %f %f %f %f\r\n", ap.imu.x_axis, ap.imu.y_axis, ap.imu.z_axis, error, pid);
+                    printf("roll/pitch/yaw/mag error/pid: %f %f %f %f %f %f\r\n", ap.imu.x_axis, ap.imu.y_axis, ap.imu.z_axis, ap.mag.z_axis, pid);
                 }
             }
             
